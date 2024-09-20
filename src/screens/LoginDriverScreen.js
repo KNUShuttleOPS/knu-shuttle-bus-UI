@@ -36,7 +36,7 @@ const LoginDriverScreen = ({ navigation }) => {
             secureTextEntry 
         />
         </View>
-      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('DriveBus')}>
+      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('SelectBus')}>
         <Text style={styles.buttonText}>로그인</Text>
       </TouchableOpacity>
     </View>

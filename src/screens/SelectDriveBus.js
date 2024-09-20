@@ -6,26 +6,10 @@ import KNU_emblem_Red from '../../assets/img/KNU_emblem_Red.png';
 import Bus_Icon from '../../assets/img/Bus_Icon.png';
 import LineDivider_Red from '../../assets/img/LineDivider_Red.png';
 
-const StartDriveBus = ({ navigation }) => {
+const SelectDriveBus = ({ navigation }) => {
   const [fontsLoaded] = useFonts({
     KNU_TRUTH: require("../../assets/font/KNU TRUTH.ttf"),
   });
-  const [isDriving, setIsDriving] = useState(false); // 운행 상태 관리
-
-  if (!fontsLoaded) return null;
-
-  const startOrStopDriving = () => {
-    if (!isDriving) {
-      // 운행 시작 상태일 때 메세지 표시
-      Alert.alert('안전운전 하세요!');
-    } else {
-      // 운행 종료 상태일 때 메세지 표시 후 HomeScreen으로 이동
-      Alert.alert('수고하셨습니다!', '', [
-        { text: '확인', onPress: () => navigation.navigate('Home') }  // '확인' 버튼을 누르면 HomeScreen으로 이동
-      ]);
-    }
-    setIsDriving(!isDriving);  // 상태를 반전시킴
-  };
 
   const accidentOccurred = () => {
     alert('사고 발생!');
@@ -39,32 +23,24 @@ const StartDriveBus = ({ navigation }) => {
       
       <Image source={LineDivider_Red} style={{ width: 360, height: 2, position: 'absolute', top:60}} />
       <View style={styles.spacer2} />
+
+      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('DriveBus')}>
+        <Text style={styles.buttonText}>1호차</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('DriveBus')}>
+        <Text style={styles.buttonText}>2호차</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('DriveBus')}>
+        <Text style={styles.buttonText}>3호차</Text>
+      </TouchableOpacity>
+      <View style={styles.spacer2} />
+      <Image source={LineDivider_Red} style={{ width: 360, height: 2 }} />
+      <View style={styles.spacer2} />
       <Image source={KNU_logoEng} style={{ width: 242, height: 70 }} />
       <Text style={styles.KNU_logo_font}>셔틀버스 시스템</Text>
       <View style={styles.spacer2} />
-
-      <Image source={Bus_Icon} style={{ width: 180, height: 180 }} />
-      <View style={styles.spacer} />
-      <Image source={LineDivider_Red} style={{ width: 360, height: 2 }} />
-
-      <TouchableOpacity style={styles.button2} onPress={accidentOccurred}>
-        <Text style={styles.buttonText2}>🔔 지연 알림</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity
-        style={[
-          styles.button,
-          isDriving && { borderColor: '#DA2127' } // 운행 중일 때 테두리 색상 변경
-        ]}
-        onPress={startOrStopDriving}
-      >
-        <Text style={[
-          styles.buttonText,
-          isDriving && { color: '#DA2127' } // 운행 중일 때 텍스트 색상 변경
-        ]}>
-          {isDriving ? '🛑 운행 종료' : '🚌 운행 시작'}  {/* 상태에 따른 텍스트 변경 */}
-        </Text>
-      </TouchableOpacity>
     </View>
   );
 };
@@ -97,15 +73,15 @@ const styles = StyleSheet.create({
   },
   button: {
     backgroundColor: 'rgba(255, 255, 255, 0.85)', // 버튼 배경색
-    paddingVertical: 30, // 버튼 세로 패딩
-    paddingHorizontal: 25, // 버튼 가로 패딩
+    paddingVertical: 20, // 버튼 세로 패딩
+    paddingHorizontal: 120, // 버튼 가로 패딩
     borderRadius: 10, // 버튼의 둥근 모서리
     borderWidth: 2, // 테두리 두께
-    borderColor: '#797977', // 테두리 색상
+    borderColor: '#DA2127', // 테두리 색상
     marginTop: 20, // 텍스트 아래 간격
   },
   buttonText: {
-    color: '#797977', // 텍스트 색상
+    color: '#DA2127', // 텍스트 색상
     fontSize: 40, // 텍스트 크기
     fontWeight: 'normal', // 텍스트 굵기
   },
@@ -131,4 +107,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default StartDriveBus;
+export default SelectDriveBus;
