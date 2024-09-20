@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, ImageBackground, Image, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, ImageBackground, Image, TouchableOpacity, TextInput } from 'react-native';
 import { useFonts } from "expo-font";
 import KNU_logoEng from '../../assets/img/KNU_logoEng_Red.png';
 import KNU_emblem_Red from '../../assets/img/KNU_emblem_Red.png';
@@ -20,7 +20,22 @@ const LoginStudentScreen = ({ navigation }) => {
       <Text style={styles.KNU_logo_font}>셔틀버스 시스템</Text>
 
       <View style={styles.spacer} />
+      <View style={styles.inputContainer}>
+        <TextInput 
+            style={styles.input} 
+            placeholder="ID를 입력하세요" 
+            placeholderTextColor="#999" 
+        />
+        </View>
 
+        <View style={styles.inputContainer}>
+        <TextInput 
+            style={styles.input} 
+            placeholder="비밀번호를 입력하세요" 
+            placeholderTextColor="#999" 
+            secureTextEntry 
+        />
+        </View>
       <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('StudentLogin')}>
         <Text style={styles.buttonText}>로그인</Text>
       </TouchableOpacity>
@@ -57,7 +72,7 @@ const styles = StyleSheet.create({
   button: {
     backgroundColor: 'rgba(255, 255, 255, 0.85)', // 버튼 배경색
     paddingVertical: 20, // 버튼 세로 패딩
-    paddingHorizontal: 80, // 버튼 가로 패딩
+    paddingHorizontal: 60, // 버튼 가로 패딩
     borderRadius: 10, // 버튼의 둥근 모서리
     borderWidth: 2, // 테두리 두께
     borderColor: '#DA2127', // 테두리 색상
@@ -65,12 +80,27 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: '#DA2127', // 텍스트 색상
-    fontSize: 24, // 텍스트 크기
-    fontWeight: 'normal', // 텍스트 굵기
+    fontSize: 28, // 텍스트 크기
+    fontWeight: 'bold', // 텍스트 굵기
   },
   spacer: {
-    height: 50, // 원하는 높이로 설정
+    height: 95, // 원하는 높이로 설정
   },
+  input: {
+    height: 40, // 텍스트 박스 높이
+    width: '100%', // 너비를 100%로 설정
+    paddingHorizontal: 10, // 여백
+    textAlign: 'center', // 텍스트 가운데 정렬
+  },
+  inputContainer: {
+    width: '65%', // 너비
+    backgroundColor: 'rgba(255, 255, 255, 0.85)', // 배경색
+    borderColor: '#DA2127', // 테두리 색상
+    borderWidth: 2, // 테두리 두께
+    borderRadius: 10, // 둥근 모서리
+    overflow: 'hidden', // 자식 요소가 경계 바깥으로 나가지 않도록 설정
+    marginTop: 20, // 위쪽 간격
+  },  
 });
 
 export default LoginStudentScreen;
