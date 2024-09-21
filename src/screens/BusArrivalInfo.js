@@ -78,7 +78,7 @@ const BusArrivalInfo = () => {
           />
           <View style={styles.busIconContainer}>
             <Image
-              source={require('../assets/img/bus_icon.png')}
+              source={require('../assets/img/bus_move_icon.png')}
               style={styles.busIcon}
             />
           </View>
