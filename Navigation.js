@@ -4,7 +4,7 @@ import { NavigationContainer } from "@react-navigation/native";
 
 import Splash from './src/screens/Splash';
 import Login from './src/screens/Login';
-import BusStopList from './src/screens/BusStopList';
+import BusSchedule from './src/screens/BusSchedule';
 import BusArrivalInfo from './src/screens/BusArrivalInfo';
 
 
@@ -17,7 +17,7 @@ function StackScreen() {
     >
       <Stack.Screen name="Splash" component={Splash} />
       <Stack.Screen name="Login" component={Login} />
-      <Stack.Screen name="BusStopList" component={BusStopList} />
+      <Stack.Screen name="BusSchedule" component={BusSchedule} />
       <Stack.Screen name="BusArrivalInfo" component={BusArrivalInfo} />
     </Stack.Navigator>
   );

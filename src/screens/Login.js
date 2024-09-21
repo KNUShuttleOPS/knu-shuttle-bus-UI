@@ -11,9 +11,9 @@ const Login = () => {
         <View>      
             <Text>로그인 화면</Text>
             <TouchableOpacity
-                onPress={() => navigation.navigate("BusStopList", { screen: 'BusStopList' })}
+                onPress={() => navigation.navigate("BusSchedule", { screen: 'BusSchedule' })}
             >
-                <Text>버스 정류장 목록 화면으로</Text>
+                <Text>버스 시간표 화면으로</Text>
             </TouchableOpacity>
             <TouchableOpacity
                 onPress={() => navigation.navigate("BusArrivalInfo", { screen: 'BusArrivalInfo' })}
