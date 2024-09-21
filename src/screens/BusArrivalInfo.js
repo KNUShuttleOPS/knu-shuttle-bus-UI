@@ -162,7 +162,7 @@ const styles = StyleSheet.create({
   busLineContainer: {
     flexDirection: 'row',
     width: 360,
-    height: 460,
+    height: 400,
   },
   busLineImage: {
     width: 50,
