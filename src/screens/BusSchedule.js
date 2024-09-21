@@ -15,17 +15,29 @@ const BusSchedule = () => {
     navigation.goBack();
   };
 
-  // 더미 데이터 생성
-  const schedules = Array.from({ length: 13 }, (_, index) => ({
-    title: `${index + 1}회차`,
-  }));
-
-  // 시간 리스트
-  const times = [
-    '8:00', '8:05', '8:10', '8:20', '8:30', 
-    '8:35', '8:40', '8:50', '9:00', '9:05', 
-    '9:10', '9:30', '9:35'
-  ];
+  const schedules = {
+    "1호선 - 신천역": {
+      title: "1호선 - 신천역",
+      times: [
+        '8:00', '8:05', '8:10', '8:20', '8:30', 
+        '8:35', '8:40', '8:50', '9:00', '9:05', 
+        '9:10', '9:30', '9:35'
+      ],
+    },
+    "2호선 - 대구은행역": {
+      title: "2호선 - 대구은행역",
+      times: [
+        '8:15', '8:20', '8:30', '9:05', '9:10', 
+        '9:20'
+      ],
+    },
+    "3호선 - 북구청역": {
+      title: "3호선 - 북구청역",
+      times: [
+        '8:20', '9:10'
+      ],
+    },
+  };
 
   return (
     <View style={{ flex: 1 }}>      
@@ -36,17 +48,22 @@ const BusSchedule = () => {
             style={styles.backButtonImage}
           />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>1호선 - 신천역</Text>
+        <Text style={styles.headerTitle}>통학버스 운행시간표</Text>
       </View>
       <View style={styles.redLine} />
 
       <ScrollView contentContainerStyle={styles.scheduleContainer}>
-        {schedules.map((schedule, index) => (
-          <View key={index} style={styles.scheduleBox}>
-            <View style={styles.scheduleRow}>
-              <Text style={styles.scheduleTitle}>{schedule.title}</Text>
-              <Text style={styles.scheduleTime}>{times[index]}</Text>
-            </View>
+        {Object.entries(schedules).map(([line, { title, times }]) => (
+          <View key={line} style={styles.lineContainer}>
+            <Text style={styles.lineTitle}>{title}</Text>
+            {times.map((time, index) => (
+              <View key={index} style={styles.scheduleBox}>
+                <View style={styles.scheduleRow}>
+                  <Text style={styles.scheduleTitle}>{index + 1}회차</Text>
+                  <Text style={styles.scheduleTime}>{time}</Text>
+                </View>
+              </View>
+            ))}
           </View>
         ))}
       </ScrollView>
@@ -64,7 +81,7 @@ const styles = StyleSheet.create({
   backButtonImage: {
     marginTop: 23,
     marginRight: 10, 
-    marginLeft: -100,
+    marginLeft: -70,
   },
   headerTitle: {
     color: '#DA2127',
@@ -85,6 +102,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: 30,
     paddingBottom: 20,
   },
+  lineContainer: {
+    marginBottom: 20,
+  },
+  lineTitle: {
+    fontSize: 24,
+    color: '#DA2127',
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
   scheduleBox: {
     backgroundColor: 'white',
     borderRadius: 10,
@@ -98,15 +124,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginHorizontal: 50
+    marginHorizontal: 50,
   },
   scheduleTitle: {
-    fontSize: 20,
+    fontSize: 18,
     color: '#DA2127',
     fontWeight: 'bold',
   },
   scheduleTime: {
-    fontSize: 20,
+    fontSize: 18,
     color: 'gray',
     fontWeight: 'bold',
   },
