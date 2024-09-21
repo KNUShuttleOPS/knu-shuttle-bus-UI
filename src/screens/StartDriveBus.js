@@ -48,7 +48,7 @@ const StartDriveBus = ({ navigation, route }) => {
       <Image source={Bus_Icon} style={{ width: 180, height: 180 }} />
       <View style={styles.spacer2} />
       {/* 호선 및 호차 정보를 표시하는 텍스트 추가 */}
-      <Text style={styles.infoText}>{line} {busNumber}회차</Text>
+      <Text style={styles.infoText}>{line}호선 {busNumber}회차</Text>
       
       <View style={styles.spacer2} />
       <Image source={LineDivider_Red} style={{ width: 360, height: 2 }} />
