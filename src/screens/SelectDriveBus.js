@@ -51,7 +51,7 @@ const SelectDriveBus = ({ navigation }) => {
         <ScrollView style={styles.scrollContainer} contentContainerStyle={styles.scrollContent}>
           {[...Array(13).keys()].map((index) => (
             <TouchableOpacity key={index} style={styles.smallButton} onPress={() => navigation.navigate('DriveBus', { line: 1, busNumber: index + 1 })}>
-              <Text style={styles.smallButtonText}>{index + 1}호차</Text>
+              <Text style={styles.smallButtonText}>{index + 1}회차</Text>
             </TouchableOpacity>
           ))}
         </ScrollView>
@@ -67,7 +67,7 @@ const SelectDriveBus = ({ navigation }) => {
         <ScrollView style={styles.scrollContainer} contentContainerStyle={styles.scrollContent}>
           {[...Array(6).keys()].map((index) => (
             <TouchableOpacity key={index} style={styles.smallButton} onPress={() => navigation.navigate('DriveBus', { line: 2, busNumber: index + 1 })}>
-              <Text style={styles.smallButtonText}>{index + 1}호차</Text>
+              <Text style={styles.smallButtonText}>{index + 1}회차</Text>
             </TouchableOpacity>
           ))}
         </ScrollView>
@@ -83,7 +83,7 @@ const SelectDriveBus = ({ navigation }) => {
         <ScrollView style={styles.scrollContainer} contentContainerStyle={styles.scrollContent}>
           {[...Array(2).keys()].map((index) => (
             <TouchableOpacity key={index} style={styles.smallButton} onPress={() => navigation.navigate('DriveBus', { line: 3, busNumber: index + 1 })}>
-              <Text style={styles.smallButtonText}>{index + 1}호차</Text>
+              <Text style={styles.smallButtonText}>{index + 1}회차</Text>
             </TouchableOpacity>
           ))}
         </ScrollView>

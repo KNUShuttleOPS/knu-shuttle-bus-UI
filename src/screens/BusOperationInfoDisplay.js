@@ -7,6 +7,7 @@ import LineDivider_Red from '../../assets/img/LineDivider_Red.png';
 import MapMaker_Icon from '../../assets/img/MapMaker_Icon.png';
 import BusLine_2way from '../../assets/img/BusLine_2way.png';
 import BusLine_1way from '../../assets/img/BusLine_1way.png';
+import KNU_logoFlower from '../../assets/img/KNU_logoFlower.png';
 
 const BusOperationInfoDisplay = ({ route }) => {
   const { stationName } = route.params;
@@ -49,7 +50,7 @@ const BusOperationInfoDisplay = ({ route }) => {
         {BusNumFirst !== "0" ? (
           <View style={styles.infoBox}>
             <View style={styles.leftAlign}>
-              <Text style={styles.busNum}>{BusNumFirst}호선</Text>
+              <Text style={styles.busNum}>{BusNumFirst}호차</Text>
             </View>
             <View style={styles.centerAlign}>
               <Text style={styles.arrival}>{ArrivalMinuteFirst}분 후 도착</Text>
@@ -69,7 +70,7 @@ const BusOperationInfoDisplay = ({ route }) => {
         {BusNumSecond !== "0" ? (
           <View style={styles.infoBox}>
             <View style={styles.leftAlign}>
-              <Text style={styles.busNum}>{BusNumSecond}호선</Text>
+              <Text style={styles.busNum}>{BusNumSecond}호차</Text>
             </View>
             <View style={styles.centerAlign}>
               <Text style={styles.arrival}>{ArrivalMinuteSecond}분 후 도착</Text>
@@ -85,7 +86,7 @@ const BusOperationInfoDisplay = ({ route }) => {
         {BusNumThird !== "0" ? (
           <View style={styles.infoBox}>
             <View style={styles.leftAlign}>
-              <Text style={styles.busNum}>{BusNumThird}호선</Text>
+              <Text style={styles.busNum}>{BusNumThird}호차</Text>
             </View>
             <View style={styles.centerAlign}>
               <Text style={styles.arrival}>{ArrivalMinuteThird}분 후 도착</Text>
@@ -107,10 +108,32 @@ const BusOperationInfoDisplay = ({ route }) => {
         <Image source={busLineImage} style={styles.busLineImage} />
         <View style={styles.stationTextContainer}>
           <Text style={styles.departureText}>출발지</Text>
+          {/* 추가된 부분: 동대구역 텍스트 */}
+          {stationName === '신천역' && (
+            <Text style={[styles.departureText, { marginTop: 32 }]}>동대구역</Text> // marginTop 추가
+          )}
+          {/* 추가된 부분: 동대구역 텍스트 */}
+          {stationName === '대구은행역' && (
+            <Text style={[styles.departureText, { marginTop: 32 }]}>만촌역</Text> // marginTop 추가
+          )}
+          
           <View style={styles.textBorder}>
             <Text style={styles.stationLineText}>{stationName}</Text>
           </View>
-          <Text style={styles.destinationText}>경북대학교</Text>
+          {/* 추가된 부분: 신천역 텍스트 */}
+          {stationName === '동대구역' && (
+            <Text style={[styles.departureText, { marginTop: 32 }]}>신천역</Text> // marginTop 추가
+          )}
+
+          {/* 추가된 부분: 동대구역 텍스트 */}
+          {stationName === '만촌역' && (
+            <Text style={[styles.departureText, { marginTop: 32 }]}>대구은행역</Text> // marginTop 추가
+          )}
+
+          <View style={styles.destinationContainer}>
+            <Image source={KNU_logoFlower} style={styles.logoFlower} />
+            <Text style={styles.destinationText}>경북대학교</Text>
+          </View>
         </View>
       </View>
       
@@ -143,7 +166,7 @@ const styles = StyleSheet.create({
     height: 480,
   },
   busLineImage: {
-    width: 56,
+    width: 55,
     height: '100%', // Height should be 100% of the container
     resizeMode: 'contain', // Keep aspect ratio
   },
@@ -250,23 +273,38 @@ const styles = StyleSheet.create({
     borderColor: '#DA2127',
     borderRadius: 10,
     width: 260,
+    height: 100, // 높이를 늘립니다
     padding: 5, // 텍스트 주변 여백
+    justifyContent: 'center', // 수직 가운데 정렬
+    alignItems: 'center', // 수평 가운데 정렬
+    display: 'flex', // flex 컨테이너로 설정
   },
   departureText: {
-    fontSize: 32,
+    fontSize: 40,
     color: '#DA2127',
     fontWeight: 'bold',
-    marginBottom: 10, // "출발지" 아래 여백 추가
+    marginBottom: 25, // "출발지" 아래 여백 추가
     textAlign: 'left', // 왼쪽 정렬
   },
   destinationText: {
     fontFamily: "KNU_TRUTH",
-    fontSize: 32,
+    fontSize: 40,
     color: '#DA2127',
     fontWeight: 'bold',
     marginTop: 10, // "경북대학교" 위 여백 추가
     textAlign: 'left', // 왼쪽 정렬
   },  
+  destinationContainer: {
+    flexDirection: 'row', // 수평 정렬
+    alignItems: 'center', // 수직 가운데 정렬
+    marginTop: 10, // 텍스트 위 여백
+  },
+  logoFlower: {
+    width: 40, // 이미지 너비 조정
+    height: 40, // 이미지 높이 조정
+    marginRight: 5, // 텍스트와의 간격
+    alignSelf: 'center', // 중앙 정렬
+  },
 });
 
 export default BusOperationInfoDisplay;
