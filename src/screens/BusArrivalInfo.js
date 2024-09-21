@@ -1,12 +1,22 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { StyleSheet, Text, View, ImageBackground, Image, TouchableOpacity, Alert } from 'react-native';
 import { useFonts } from "expo-font";
+import * as Notifications from 'expo-notifications';
 import KNU_emblem_Gray from '../assets/img/KNU_emblem_Gray.png';
 import LineDivider_Red from '../assets/img/LineDivider_Red.png';
 import MapMaker_Icon from '../assets/img/MapMaker_Icon.png';
 import BusLine_2way from '../assets/img/BusLine_2way.png';
 import BusLine_1way from '../assets/img/BusLine_1way.png';
 import KNU_logoFlower from '../assets/img/KNU_logoFlower.png';
+import BusAlarmIcon from '../assets/img/bus_alarm.png';
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: false,
+  }),
+});
 
 const  BusArrivalInfo = ({ route }) => {
   const { stationName } = route.params;
@@ -15,6 +25,30 @@ const  BusArrivalInfo = ({ route }) => {
     KNU_TRUTH: require("../assets/font/KNU TRUTH.ttf"),
   });
   if (!fontsLoaded) return null;
+
+  useEffect(() => {
+    const requestPermissions = async () => {
+      const { status } = await Notifications.getPermissionsAsync();
+      if (status !== 'granted') {
+        const { status: newStatus } = await Notifications.requestPermissionsAsync();
+        if (newStatus !== 'granted') {
+          Alert.alert('알림 권한이 필요합니다.');
+        }
+      }
+    };
+
+    requestPermissions();
+  }, []);
+
+  const handleAlarmIconPress = async () => {
+    await Notifications.scheduleNotificationAsync({
+      content: {
+        title: "버스 도착 알림",
+        body: `${BusNumFirst}호차가 ${ArrivalMinuteFirst}분 후 도착합니다.`,
+      },
+      trigger: null, // 즉시 알림
+    });
+  };
 
   // Initialize variables
   const BusNumFirst = "1";
@@ -140,10 +174,15 @@ const  BusArrivalInfo = ({ route }) => {
       <View style={styles.spacer} />
       {/* Station name and icon section */}
       <View style={styles.stationContainer}>
+        <View style={styles.stationNameContainer}>
         <Text style={styles.stationNameText}>{stationName}</Text>
         <TouchableOpacity onPress={handleMapIconPress} style={styles.iconButton}>
           <Image source={MapMaker_Icon} style={styles.icon} />
         </TouchableOpacity>
+        </View>
+        <TouchableOpacity onPress={handleAlarmIconPress}>
+          <Image source={BusAlarmIcon} style={styles.Alarmicon}/>
+      </TouchableOpacity>
       </View>
       <View style={styles.spacer} />
     </View>
@@ -180,9 +219,16 @@ const styles = StyleSheet.create({
   },
   stationContainer: {
     flexDirection: 'row',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
     alignItems: 'center',
     marginTop: 0,
+    width: '100%',
+    paddingHorizontal: 20,
+  },
+  stationNameContainer: {
+    flexDirection: 'row',
+    marginLeft: 100,
+    marginBottom: 10
   },
   stationNameText: {
     fontSize: 32,
@@ -309,6 +355,10 @@ const styles = StyleSheet.create({
     marginTop: 6,
     alignSelf: 'center', // 중앙 정렬
   },
+  Alarmicon: {
+    width: 50,
+    height: 50,
+  }
 });
 
 export default BusArrivalInfo;
