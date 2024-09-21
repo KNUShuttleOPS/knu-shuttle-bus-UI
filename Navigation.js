@@ -11,6 +11,7 @@ import BusArrivalInfo from './src/screens/BusArrivalInfo';
 import SelectDriveBus from './src/screens/SelectDriveBus';
 import StartDriveBus from './src/screens/StartDriveBus';
 import SelectBusStation from './src/screens/SelectBusStation';
+import RTBusLocationMap from './src/screens/RTBusLocationMap';
 
 const Stack = createStackNavigator();
 
@@ -25,6 +26,7 @@ function StackScreen() {
       <Stack.Screen name="SelectStation" component={SelectBusStation} />
       <Stack.Screen name="SelectBus" component={SelectDriveBus} />
       <Stack.Screen name="DriveBus" component={StartDriveBus} />
+      <Stack.Screen name="RTBusLocationMap" component={RTBusLocationMap} />
     </Stack.Navigator>
   );
 }

@@ -18,7 +18,7 @@ Notifications.setNotificationHandler({
   }),
 });
 
-const  BusArrivalInfo = ({ route }) => {
+const  BusArrivalInfo = ({ route, navigation }) => {
   const { stationName } = route.params;
 
   const [fontsLoaded] = useFonts({
@@ -62,11 +62,6 @@ const  BusArrivalInfo = ({ route }) => {
   const BusNumThird = "3";
   const ArrivalMinuteThird = "10";
   const delayMinuteThird = "2";
-
-  // Icon button action
-  const handleMapIconPress = () => {
-    Alert.alert("지도", "지도로 이동합니다.");
-  };
 
   // Determine which bus line image to display
   const busLineImage = stationName === '북구청역' ? BusLine_1way : BusLine_2way;
@@ -176,7 +171,7 @@ const  BusArrivalInfo = ({ route }) => {
       <View style={styles.stationContainer}>
         <View style={styles.stationNameContainer}>
         <Text style={styles.stationNameText}>{stationName}</Text>
-        <TouchableOpacity onPress={handleMapIconPress} style={styles.iconButton}>
+        <TouchableOpacity onPress={() => navigation.navigate('RTBusLocationMap', { stationName })} style={styles.iconButton}>
           <Image source={MapMaker_Icon} style={styles.icon} />
         </TouchableOpacity>
         </View>

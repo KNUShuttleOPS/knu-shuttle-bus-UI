@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, ImageBackground, Image, TouchableOpacity, Alert } from 'react-native';
 import { useFonts } from "expo-font";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useFocusEffect } from '@react-navigation/native'; 
 import KNU_logoEng from '../assets/img/KNU_logoEng_Red.png';
 import KNU_emblem_Red from '../assets/img/KNU_emblem_Red.png';
 import LineDivider_Red from '../assets/img/LineDivider_Red.png';
@@ -18,12 +20,28 @@ const SelectBusStation = ({ navigation }) => {
 
   if (!fontsLoaded) return null;
 
-  const handleFavorite = (stationName) => {
+  useFocusEffect(
+    React.useCallback(() => {
+      const loadFavoriteStation = async () => {
+        const storedStation = await AsyncStorage.getItem('favoriteStation');
+        if (storedStation) {
+          setFavoriteStation(storedStation);
+        }
+      };
+      loadFavoriteStation();
+    }, [])
+  );
+
+  if (!fontsLoaded) return null;
+
+  const handleFavorite = async (stationName) => {
     if (favoriteStation === stationName) {
       setFavoriteStation(null);
+      await AsyncStorage.removeItem('favoriteStation'); // 즐겨찾기 해제
       Alert.alert('즐겨찾기가 해제되었습니다!');
     } else {
       setFavoriteStation(stationName);
+      await AsyncStorage.setItem('favoriteStation', stationName); // 즐겨찾기 저장
       Alert.alert('즐겨찾기가 지정되었습니다!');
     }
   };
