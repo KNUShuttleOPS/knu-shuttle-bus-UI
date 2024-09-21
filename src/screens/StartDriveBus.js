@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, ImageBackground, Image, TouchableOpacity, Alert } from 'react-native';
 import { useFonts } from "expo-font";
+import {createMqttClient} from '../services/Paho_MQTTClient';
 import KNU_logoEng from '../assets/img/KNU_logoEng_Red.png';
 //import KNU_emblem_Red from '../assets/img/KNU_emblem_Red.png';
 import KNU_emblem_Gray from '../assets/img/KNU_emblem_Gray.png';
@@ -12,15 +13,34 @@ const StartDriveBus = ({ navigation, route }) => {
     KNU_TRUTH: require("../assets/font/KNU TRUTH.ttf"),
   });
   const [isDriving, setIsDriving] = useState(false); // 운행 상태 관리
-
+  const [mqttClient, setMqttClient] = useState(null);
   if (!fontsLoaded) return null;
-
+  
+  useEffect(() => {
+    createMqttClient()
+      .then((client) => {
+        setMqttClient(client);
+      })
+      .catch((error) => {
+        console.error('Failed to initialize MQTT client:', error);
+      });
+  }, []);
+  
   const startOrStopDriving = () => {
     if (!isDriving) {
-      Alert.alert('안전운전 하세요!');
+      createMqttClient()
+      .then((client) => {
+        setMqttClient(client);
+      })
+      .catch((error) => {
+        console.error('Failed to initialize MQTT client:', error);
+      });
     } else {
       Alert.alert('수고하셨습니다!', '', [
-        { text: '확인', onPress: () => navigation.navigate('Home') }
+        { text: '확인', onPress: () => {
+          mqttClient.disconnected();
+          navigation.navigate('Home');
+        } }
       ]);
     }
     setIsDriving(!isDriving);  // 상태를 반전시킴

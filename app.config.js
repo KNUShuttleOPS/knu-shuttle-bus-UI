@@ -23,7 +23,9 @@ export default {
             googleMapsApiKey: process.env.GOOGLE_MAPS_API_KEY, 
         },
         infoPlist : {
-            NSLocationWhenInUseUsageDescription: "앱 사용 중에 위치 서비스를 허용해주세요."
+            NSLocationWhenInUseUsageDescription: "앱 사용 중에 위치 서비스를 허용해주세요.",
+            NSLocationAlwaysUsageDescription: "앱이 백그라운드에서 위치를 추적하려면 위치 접근 권한이 필요합니다.",
+            UIBackgroundModes: ["location"]
         }
     },
     android: {
@@ -36,7 +38,12 @@ export default {
             googleMaps: {
             apiKey: process.env.GOOGLE_MAPS_API_KEY, 
             },
-        }
+        },
+        permissions: [
+            "ACCESS_FINE_LOCATION",
+            "ACCESS_COARSE_LOCATION",
+            "FOREGROUND_SERVICE"
+        ]
     },
     web: {
       favicon: "./assets/favicon.png"

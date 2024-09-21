@@ -36,3 +36,4 @@ yarn-error.*
 
 # credentials
 google-map-credentials.env
+naver-direction5-credentials.env
