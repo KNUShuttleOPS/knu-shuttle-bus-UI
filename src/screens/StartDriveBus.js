@@ -4,7 +4,7 @@ import { useFonts } from "expo-font";
 import KNU_logoEng from '../assets/img/KNU_logoEng_Red.png';
 //import KNU_emblem_Red from '../assets/img/KNU_emblem_Red.png';
 import KNU_emblem_Gray from '../assets/img/KNU_emblem_Gray.png';
-import Bus_Icon from '../assets/img/bus_icon.png';
+import Bus_Icon from '../assets/img/Bus_Icon.png';
 import LineDivider_Red from '../assets/img/LineDivider_Red.png';
 
 const StartDriveBus = ({ navigation, route }) => {
