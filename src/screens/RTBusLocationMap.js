@@ -3,17 +3,26 @@ import { View, Text, StyleSheet, TouchableOpacity, Image, Alert } from 'react-na
 import MapView, { Marker } from 'react-native-maps';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native'; 
+import BusMarker from '../assets/img/bus_marker.png';
 import BusStopMarker from '../assets/img/busStop_marker.png';
 import StarChecked_Icon from '../assets/img/StarChecked_Icon.png';
 import StarUnchecked_Icon from '../assets/img/StarUnchecked_Icon.png';
 import LineDivider_Red from '../assets/img/LineDivider_Red.png';
 
+const stationCoordinates = {
+  '만촌역': { latitude: 35.859082, longitude: 128.645435 },
+  '동대구역': { latitude: 35.879131, longitude: 128.626705 },
+  '신천역': { latitude: 35.875143, longitude: 128.617462 },
+  '대구은행역': { latitude: 35.859594, longitude: 128.614763 },
+  '북구청역': { latitude: 35.884060, longitude: 128.581713 },
+};
+
 const RTBusLocationMap = ({ route }) => {
     const { stationName } = route.params;
 
     const region = {
-        latitude: 35.866258,
-        longitude: 128.594013,
+        latitude: stationCoordinates[stationName].latitude,
+        longitude: stationCoordinates[stationName].longitude,
         latitudeDelta: 0.01,
         longitudeDelta: 0.01,
     };
@@ -53,11 +62,23 @@ const RTBusLocationMap = ({ route }) => {
                     initialRegion={region}
                     showsUserLocation={true} // 사용자 위치 표시
                 >
+                    {/* 각 정류소에 대한 Marker 추가 */}
+                    {Object.entries(stationCoordinates).map(([name, coords]) => (
+                        <Marker
+                            key={name}
+                            coordinate={coords}
+                            title={name}
+                            description={`${name} 근처`}
+                            icon={BusStopMarker} // 정류소 아이콘
+                        />
+                    ))}
+                    
+                    {/* 버스 위치에 대한 Marker 추가 (예시 좌표) */}
                     <Marker
                         coordinate={{ latitude: 35.866258, longitude: 128.594013 }} // 버스 위치 예시 좌표
-                        title="수성역"
-                        description="수성구역 근처"
-                        icon={BusStopMarker}
+                        title="버스 위치"
+                        description="버스가 이 위치에 있습니다."
+                        icon={BusMarker} // 버스 아이콘
                     />
                 </MapView>
             </View>
