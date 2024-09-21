@@ -35,7 +35,7 @@ const SelectBusStation = ({ navigation }) => {
   const renderStationButton = (stationName) => {
     return (
       <View style={styles.stationContainer}>
-        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('DriveBus')}>
+        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('OperationDisplay')}>
           <Text style={styles.buttonText}>{stationName}</Text>
         </TouchableOpacity>
         <TouchableOpacity

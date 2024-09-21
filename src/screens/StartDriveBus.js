@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { StyleSheet, Text, View, ImageBackground, Image, TouchableOpacity, Alert } from 'react-native';
 import { useFonts } from "expo-font";
 import KNU_logoEng from '../../assets/img/KNU_logoEng_Red.png';
-import KNU_emblem_Red from '../../assets/img/KNU_emblem_Red.png';
+//import KNU_emblem_Red from '../../assets/img/KNU_emblem_Red.png';
+import KNU_emblem_Gray from '../../assets/img/KNU_emblem_Gray.png';
 import Bus_Icon from '../../assets/img/Bus_Icon.png';
 import LineDivider_Red from '../../assets/img/LineDivider_Red.png';
 
@@ -34,7 +35,7 @@ const StartDriveBus = ({ navigation, route }) => {
 
   return (
     <View style={styles.container}>
-      <ImageBackground source={KNU_emblem_Red} style={styles.background}>
+      <ImageBackground source={KNU_emblem_Gray} style={styles.background}>
         <View style={styles.overlay} />
       </ImageBackground>
       
@@ -88,13 +89,13 @@ const styles = StyleSheet.create({
     color: '#000',
   },
   background: {
-    position: 'absolute',
-    top: 230,
-    left: -210,
-    width: 580,
-    height: 580,
-    resizeMode: 'cover',
-    zIndex: -1,
+    position: 'absolute',  // 배경 이미지를 절대 위치로 설정
+    top: 270,  // Y 좌표 위치 (배경 이미지를 이동시킬 위치)
+    left: 20,  // X 좌표 위치
+    width: 580,  // 배경 이미지 너비
+    height: 580,  // 배경 이미지 높이
+    resizeMode: 'cover',  // 이미지 크기 조정 방식
+    zIndex: -1,  // 배경 이미지를 UI 뒤로 보냄
   },
   overlay: {
     ...StyleSheet.absoluteFillObject,
