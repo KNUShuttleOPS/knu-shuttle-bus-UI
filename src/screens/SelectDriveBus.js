@@ -50,7 +50,7 @@ const SelectDriveBus = ({ navigation }) => {
       {showLine1 && (
         <ScrollView style={styles.scrollContainer} contentContainerStyle={styles.scrollContent}>
           {[...Array(13).keys()].map((index) => (
-            <TouchableOpacity key={index} style={styles.smallButton} onPress={() => alert(`${index + 1}번 버스를 선택하셨습니다.`)}>
+            <TouchableOpacity key={index} style={styles.smallButton} onPress={() => navigation.navigate('DriveBus', { line: '1호선', busNumber: index + 1 })}>
               <Text style={styles.smallButtonText}>{index + 1}호차</Text>
             </TouchableOpacity>
           ))}
@@ -66,7 +66,7 @@ const SelectDriveBus = ({ navigation }) => {
       {showLine2 && (
         <ScrollView style={styles.scrollContainer} contentContainerStyle={styles.scrollContent}>
           {[...Array(6).keys()].map((index) => (
-            <TouchableOpacity key={index} style={styles.smallButton} onPress={() => alert(`${index + 1}번 버스를 선택하셨습니다.`)}>
+            <TouchableOpacity key={index} style={styles.smallButton} onPress={() => navigation.navigate('DriveBus', { line: '2호선', busNumber: index + 1 })}>
               <Text style={styles.smallButtonText}>{index + 1}호차</Text>
             </TouchableOpacity>
           ))}
@@ -82,7 +82,7 @@ const SelectDriveBus = ({ navigation }) => {
       {showLine3 && (
         <ScrollView style={styles.scrollContainer} contentContainerStyle={styles.scrollContent}>
           {[...Array(2).keys()].map((index) => (
-            <TouchableOpacity key={index} style={styles.smallButton} onPress={() => alert(`${index + 1}번 버스를 선택하셨습니다.`)}>
+            <TouchableOpacity key={index} style={styles.smallButton} onPress={() => navigation.navigate('DriveBus', { line: '3호선', busNumber: index + 1 })}>
               <Text style={styles.smallButtonText}>{index + 1}호차</Text>
             </TouchableOpacity>
           ))}
