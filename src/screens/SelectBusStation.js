@@ -7,6 +7,7 @@ import LineDivider_Red from '../../assets/img/LineDivider_Red.png';
 import ComplaintsReport_Icon from '../../assets/img/ComplaintsReport_Icon.png';
 import StarChecked_Icon from '../../assets/img/StarChecked_Icon.png';
 import StarUnchecked_Icon from '../../assets/img/StarUnchecked_Icon.png';
+import TimeTable_Icon from '../../assets/img/TimeTable_Icon.png';
 
 const SelectBusStation = ({ navigation }) => {
   const [fontsLoaded] = useFonts({
@@ -77,6 +78,11 @@ const SelectBusStation = ({ navigation }) => {
         <Image source={ComplaintsReport_Icon} style={styles.icon} />
       </TouchableOpacity>
 
+      {/* 시간표 버튼 */}
+      <TouchableOpacity style={styles.timeTableIconButton} onPress={() => alert('시간표로 이동!')}>
+        <Image source={TimeTable_Icon} style={styles.icon} />
+      </TouchableOpacity>
+
     </View>
   );
 };
@@ -138,6 +144,15 @@ const styles = StyleSheet.create({
     position: 'absolute',  // 아이콘을 절대 위치로 설정
     bottom: 20,  // 화면 하단에서 40px 위에 고정
     right: 20,  // 화면 오른쪽에서 20px 떨어진 위치에 고정
+    width: 60,  // 아이콘 버튼의 너비
+    height: 60,  // 아이콘 버튼의 높이
+    justifyContent: 'center',  // 아이콘을 중앙에 정렬
+    alignItems: 'center',  // 아이콘을 중앙에 정렬
+  },
+  timeTableIconButton: {
+    position: 'absolute',  // 아이콘을 절대 위치로 설정
+    bottom: 20,  // 화면 하단에서 40px 위에 고정
+    right: 90,  // 화면 오른쪽에서 20px 떨어진 위치에 고정
     width: 60,  // 아이콘 버튼의 너비
     height: 60,  // 아이콘 버튼의 높이
     justifyContent: 'center',  // 아이콘을 중앙에 정렬
