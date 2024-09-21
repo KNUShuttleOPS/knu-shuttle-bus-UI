@@ -1,9 +1,8 @@
-import React, { useState } from 'react';  // useState 추가
-import { StyleSheet, Text, View, ImageBackground, Image, TouchableOpacity, Alert } from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, Text, View, ImageBackground, Image, TouchableOpacity, ScrollView } from 'react-native';
 import { useFonts } from "expo-font";
 import KNU_logoEng from '../../assets/img/KNU_logoEng_Red.png';
 import KNU_emblem_Red from '../../assets/img/KNU_emblem_Red.png';
-import Bus_Icon from '../../assets/img/Bus_Icon.png';
 import LineDivider_Red from '../../assets/img/LineDivider_Red.png';
 
 const SelectDriveBus = ({ navigation }) => {
@@ -11,8 +10,27 @@ const SelectDriveBus = ({ navigation }) => {
     KNU_TRUTH: require("../../assets/font/KNU TRUTH.ttf"),
   });
 
-  const accidentOccurred = () => {
-    alert('사고 발생!');
+  // 각 호선의 버튼 표시 여부를 관리하는 상태 변수
+  const [showLine1, setShowLine1] = useState(false);
+  const [showLine2, setShowLine2] = useState(false);
+  const [showLine3, setShowLine3] = useState(false);
+
+  const toggleLine1 = () => {
+    setShowLine1(!showLine1);
+    setShowLine2(false); // 다른 호선 버튼 숨기기
+    setShowLine3(false);
+  };
+
+  const toggleLine2 = () => {
+    setShowLine2(!showLine2);
+    setShowLine1(false); // 다른 호선 버튼 숨기기
+    setShowLine3(false);
+  };
+
+  const toggleLine3 = () => {
+    setShowLine3(!showLine3);
+    setShowLine1(false); // 다른 호선 버튼 숨기기
+    setShowLine2(false);
   };
 
   return (
@@ -20,21 +38,56 @@ const SelectDriveBus = ({ navigation }) => {
       <ImageBackground source={KNU_emblem_Red} style={styles.background}>
         <View style={styles.overlay} />
       </ImageBackground>
-      
-      <Image source={LineDivider_Red} style={{ width: 360, height: 2, position: 'absolute', top:60}} />
+      <Image source={LineDivider_Red} style={{ width: 360, height: 2, position: 'absolute', top: 60 }} />
       <View style={styles.spacer2} />
 
-      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('DriveBus')}>
-        <Text style={styles.buttonText}>1호차</Text>
+      {/* 1호선 버튼 */}
+      <TouchableOpacity style={styles.button} onPress={toggleLine1}>
+        <Text style={styles.buttonText}>1호선</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('DriveBus')}>
-        <Text style={styles.buttonText}>2호차</Text>
+      {/* 1호차 버튼 아래에 작은 호차 버튼들을 스크롤 가능하게 표시 */}
+      {showLine1 && (
+        <ScrollView style={styles.scrollContainer} contentContainerStyle={styles.scrollContent}>
+          {[...Array(13).keys()].map((index) => (
+            <TouchableOpacity key={index} style={styles.smallButton} onPress={() => alert(`${index + 1}번 버스를 선택하셨습니다.`)}>
+              <Text style={styles.smallButtonText}>{index + 1}호차</Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+      )}
+
+      {/* 2호선 버튼 */}
+      <TouchableOpacity style={styles.button} onPress={toggleLine2}>
+        <Text style={styles.buttonText}>2호선</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('DriveBus')}>
-        <Text style={styles.buttonText}>3호차</Text>
+      {/* 2호차 버튼 아래에 작은 호차 버튼들을 스크롤 가능하게 표시 */}
+      {showLine2 && (
+        <ScrollView style={styles.scrollContainer} contentContainerStyle={styles.scrollContent}>
+          {[...Array(6).keys()].map((index) => (
+            <TouchableOpacity key={index} style={styles.smallButton} onPress={() => alert(`${index + 1}번 버스를 선택하셨습니다.`)}>
+              <Text style={styles.smallButtonText}>{index + 1}호차</Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+      )}
+
+      {/* 3호선 버튼 */}
+      <TouchableOpacity style={styles.button} onPress={toggleLine3}>
+        <Text style={styles.buttonText}>3호선</Text>
       </TouchableOpacity>
+
+      {/* 3호차 버튼 아래에 작은 호차 버튼들을 스크롤 가능하게 표시 */}
+      {showLine3 && (
+        <ScrollView style={styles.scrollContainer} contentContainerStyle={styles.scrollContent}>
+          {[...Array(2).keys()].map((index) => (
+            <TouchableOpacity key={index} style={styles.smallButton} onPress={() => alert(`${index + 1}번 버스를 선택하셨습니다.`)}>
+              <Text style={styles.smallButtonText}>{index + 1}호차</Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+      )}
       <View style={styles.spacer2} />
       <Image source={LineDivider_Red} style={{ width: 360, height: 2 }} />
       <View style={styles.spacer2} />
@@ -49,9 +102,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     backgroundColor: '#FFFFFF',
-    zIndex: 1, // UI를 배경 이미지 위에 위치시킴
+    zIndex: 1,
+    paddingTop: 40,
   },
   KNU_logo_font: {
     fontSize: 38,
@@ -59,51 +113,64 @@ const styles = StyleSheet.create({
     color: '#000',
   },
   background: {
-    position: 'absolute',  // 배경 이미지를 절대 위치로 설정
-    top: 230,  // Y 좌표 위치 (배경 이미지를 이동시킬 위치)
-    left: -210,  // X 좌표 위치
-    width: 580,  // 배경 이미지 너비
-    height: 580,  // 배경 이미지 높이
-    resizeMode: 'cover',  // 이미지 크기 조정 방식
-    zIndex: -1,  // 배경 이미지를 UI 뒤로 보냄
+    position: 'absolute',
+    top: 230,
+    left: -210,
+    width: 580,
+    height: 580,
+    resizeMode: 'cover',
+    zIndex: -1,
   },
   overlay: {
-    ...StyleSheet.absoluteFillObject,  // 부모 요소(배경 이미지)를 채우도록 설정
-    backgroundColor: 'rgba(255, 255, 255, 0.85)',  // 투명도 설정 (50%)
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(255, 255, 255, 0.85)',
   },
   button: {
-    backgroundColor: 'rgba(255, 255, 255, 0.85)', // 버튼 배경색
-    paddingVertical: 20, // 버튼 세로 패딩
-    paddingHorizontal: 120, // 버튼 가로 패딩
-    borderRadius: 10, // 버튼의 둥근 모서리
-    borderWidth: 2, // 테두리 두께
-    borderColor: '#DA2127', // 테두리 색상
-    marginTop: 20, // 텍스트 아래 간격
+    backgroundColor: 'rgba(255, 255, 255, 0.85)',
+    paddingVertical: 20,
+    paddingHorizontal: 120,
+    borderRadius: 10,
+    borderWidth: 2,
+    borderColor: '#DA2127',
+    marginTop: 20,
   },
   buttonText: {
-    color: '#DA2127', // 텍스트 색상
-    fontSize: 40, // 텍스트 크기
-    fontWeight: 'normal', // 텍스트 굵기
+    color: '#DA2127',
+    fontSize: 40,
+    fontWeight: 'normal',
   },
-  button2: {
-    backgroundColor: 'rgba(255, 255, 255, 0.85)', // 버튼 배경색
-    paddingVertical: 30, // 버튼 세로 패딩
-    paddingHorizontal: 34, // 버튼 가로 패딩
-    borderRadius: 10, // 버튼의 둥근 모서리
-    borderWidth: 2, // 테두리 두께
-    borderColor: '#bf7c26', // 테두리 색상
-    marginTop: 20, // 텍스트 아래 간격
+  scrollContainer: {
+    maxHeight: 250, // 스크롤뷰의 최대 높이를 240으로 제한
+    width: 320,  // 스크롤 영역의 너비 설정
+    marginTop: 10,  // 스크롤뷰가 버튼 아래에 위치하도록 여백 추가
+    marginBottom: 0, // 2호차 버튼과 간격 추가
+    borderLeftWidth: 2,  
+    borderLeftColor: '#DA2127',
   },
-  buttonText2: {
-    color: '#bf7c26', // 텍스트 색상
-    fontSize: 40, // 텍스트 크기
-    fontWeight: 'normal', // 텍스트 굵기
+  scrollContent: {
+    alignItems: 'center',  // 작은 버튼들을 가운데 정렬
+    // borderLeftWidth: 2,  // 안쪽 왼쪽에 선 추가
+    // borderLeftColor: '#DA2127',  // 안쪽 왼쪽 선의 색상
+    paddingLeft: 10,  // 텍스트와 선 사이 간격 추가 (필요 시)
   },
-  spacer: {
-    height: 50, // 원하는 높이로 설정
+  smallButton: {
+    backgroundColor: 'rgba(255, 255, 255, 0.85)',
+    paddingVertical: 10,
+    paddingHorizontal: 100,
+    borderRadius: 10,
+    borderWidth: 2,
+    borderColor: '#DA2127',
+    marginVertical: 5,
+    width: 300,
+  },
+  smallButtonText: {
+    color: '#DA2127',
+    fontSize: 24,
+    fontWeight: 'normal',
+    textAlign: 'center',
   },
   spacer2: {
-    height: 20, // 원하는 높이로 설정
+    height: 20,
   },
 });
 
