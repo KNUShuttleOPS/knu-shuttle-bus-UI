@@ -13,12 +13,18 @@ export default {
       resizeMode: "contain",
       backgroundColor: "#ffffff"
     },
+    plugins : [
+        "expo-secure-store"
+    ],
     ios: {
         supportsTablet: true,
         bundleIdentifier: "com.m3e4.knu-shuttle-bus",
         config: {
             googleMapsApiKey: process.env.GOOGLE_MAPS_API_KEY, 
         },
+        infoPlist : {
+            NSLocationWhenInUseUsageDescription: "앱 사용 중에 위치 서비스를 허용해주세요."
+        }
     },
     android: {
         package: "com.m3e4.knu_shuttle_bus",
@@ -29,8 +35,8 @@ export default {
         config: {
             googleMaps: {
             apiKey: process.env.GOOGLE_MAPS_API_KEY, 
-        },
-      },
+            },
+        }
     },
     web: {
       favicon: "./assets/favicon.png"
