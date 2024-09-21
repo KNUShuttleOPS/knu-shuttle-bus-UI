@@ -1,311 +1,313 @@
-import React, { useLayoutEffect, useState } from "react";
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Image, Dimensions, ImageBackground } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import React from 'react';
+import { StyleSheet, Text, View, ImageBackground, Image, TouchableOpacity, Alert } from 'react-native';
+import { useFonts } from "expo-font";
+import KNU_emblem_Gray from '../assets/img/KNU_emblem_Gray.png';
+import LineDivider_Red from '../assets/img/LineDivider_Red.png';
+import MapMaker_Icon from '../assets/img/MapMaker_Icon.png';
+import BusLine_2way from '../assets/img/BusLine_2way.png';
+import BusLine_1way from '../assets/img/BusLine_1way.png';
+import KNU_logoFlower from '../assets/img/KNU_logoFlower.png';
 
-const { height } = Dimensions.get('window'); // 화면 높이 가져오기
+const  BusArrivalInfo = ({ route }) => {
+  const { stationName } = route.params;
 
-const BusArrivalInfo = () => {
-  const navigation = useNavigation();
-  const [selectedStation, setSelectedStation] = useState(null); // 선택된 정류장 상태
+  const [fontsLoaded] = useFonts({
+    KNU_TRUTH: require("../assets/font/KNU TRUTH.ttf"),
+  });
+  if (!fontsLoaded) return null;
 
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerShown: false, // 기본 헤더 숨기기
-    });
-  }, [navigation]);
+  // Initialize variables
+  const BusNumFirst = "1";
+  const ArrivalMinuteFirst = "5";
+  const delayMinuteFirst = "0";
 
-  const handleBackPress = () => {
-    navigation.goBack();
+  const BusNumSecond = "2";
+  const ArrivalMinuteSecond = "3";
+  const delayMinuteSecond = "1";
+
+  const BusNumThird = "3";
+  const ArrivalMinuteThird = "10";
+  const delayMinuteThird = "2";
+
+  // Icon button action
+  const handleMapIconPress = () => {
+    Alert.alert("지도", "지도로 이동합니다.");
   };
 
-  const handleStationPress = (station) => {
-    setSelectedStation(station); // 선택된 정류장 상태 업데이트
-  };
+  // Determine which bus line image to display
+  const busLineImage = stationName === '북구청역' ? BusLine_1way : BusLine_2way;
 
   return (
-    <ImageBackground
-      source={require('../assets/img/bus_arrival_background.png')} // 배경 이미지
-      style={styles.background}
-      imageStyle={{ width: 400, height: 510, position: 'absolute', top: 400, left: 10}} // 이미지 오른쪽 아래에 배치
-    >
-    <View style={{ flex: 1 , backgroundColor: 'rgba(255, 255, 255, 0)'}}>
-      {/* 커스텀 헤더 */}
-      <View style={styles.customHeader}>
-          <TouchableOpacity onPress={handleBackPress} style={styles.backButton}>
-            <Image 
-              source={require('../assets/img/back_icon.png')}
-              style={styles.backButtonImage}
-            />
-          </TouchableOpacity>
+    <View style={styles.container}>
+      <ImageBackground source={KNU_emblem_Gray} style={styles.background}>
+        <View style={styles.overlay} />
+      </ImageBackground>
+      <Image source={LineDivider_Red} style={{ width: 360, height: 2, position: 'absolute', top: 60 }} />
+
+      {/* Bus info section */}
+      <View style={styles.infoContainer}>
+        {BusNumFirst !== "0" ? (
+          <View style={styles.infoBox}>
+            <View style={styles.leftAlign}>
+              <Text style={styles.busNum}>{BusNumFirst}호차</Text>
+            </View>
+            <View style={styles.centerAlign}>
+              <Text style={styles.arrival}>{ArrivalMinuteFirst}분 후 도착</Text>
+            </View>
+            <View style={styles.rightAlign}>
+              {delayMinuteFirst > 0 && <Text style={styles.delay}>[{delayMinuteFirst}분 지연]</Text>}
+            </View>
+          </View>
+        ) : (
+          <View style={styles.infoBox}>
+            <View style={styles.centerAlign}>
+              <Text style={styles.arrival}>운행 정보 없음</Text>
+            </View>
+          </View>
+        )}
+
+        {BusNumSecond !== "0" ? (
+          <View style={styles.infoBox}>
+            <View style={styles.leftAlign}>
+              <Text style={styles.busNum}>{BusNumSecond}호차</Text>
+            </View>
+            <View style={styles.centerAlign}>
+              <Text style={styles.arrival}>{ArrivalMinuteSecond}분 후 도착</Text>
+            </View>
+            <View style={styles.rightAlign}>
+              {delayMinuteSecond > 0 && <Text style={styles.delay}>[{delayMinuteSecond}분 지연]</Text>}
+            </View>
+          </View>
+        ) : (
+          <View style={styles.spacer3} />
+        )}
+
+        {BusNumThird !== "0" ? (
+          <View style={styles.infoBox}>
+            <View style={styles.leftAlign}>
+              <Text style={styles.busNum}>{BusNumThird}호차</Text>
+            </View>
+            <View style={styles.centerAlign}>
+              <Text style={styles.arrival}>{ArrivalMinuteThird}분 후 도착</Text>
+            </View>
+            <View style={styles.rightAlign}>
+              {delayMinuteThird > 0 && <Text style={styles.delay}>[{delayMinuteThird}분 지연]</Text>}
+            </View>
+          </View>
+        ) : (
+          <View style={styles.spacer3} />
+        )}
+      </View>
+
+      <View style={styles.spacer} />
+      <Image source={LineDivider_Red} style={{ width: 360, height: 2 }} />
+      
+      {/* Bus line view */}
+      <View style={styles.busLineContainer}>
+        <Image source={busLineImage} style={styles.busLineImage} />
+        <View style={styles.stationTextContainer}>
+          <Text style={styles.departureText}>출발지</Text>
+          {/* 추가된 부분: 동대구역 텍스트 */}
+          {stationName === '신천역' && (
+            <Text style={[styles.departureText, { marginTop: 20 }]}>동대구역</Text> // marginTop 추가
+          )}
+          {/* 추가된 부분: 동대구역 텍스트 */}
+          {stationName === '대구은행역' && (
+            <Text style={[styles.departureText, { marginTop: 20 }]}>만촌역</Text> // marginTop 추가
+          )}
           
-          <View style={styles.headerIcons}>
-          <Text style={styles.headerTitle}>만촌역</Text>
-            <Image 
-              source={require('../assets/img/bus_map.png')} 
-              style={styles.headerIconMap}
-            />
+          <View style={styles.textBorder}>
+            <Text style={styles.stationLineText}>{stationName}</Text>
           </View>
-          <Image 
-              source={require('../assets/img/bus_alarm.png')} 
-              style={styles.headerIconAlarm}
-            />
-        </View>
-        <View style={styles.redLine} />
+          {/* 추가된 부분: 신천역 텍스트 */}
+          {stationName === '동대구역' && (
+            <Text style={[styles.departureText, { marginBottom: 40 } ]}>신천역</Text> // marginTop 추가
+          )}
 
-      <ScrollView style={styles.container}>
-        <View style={styles.busInfoContainer}>
-          <View style={styles.busInfoBox}>
-            <Text style={styles.highlight}>1호차</Text>
-            <Text style={styles.busInfo}> 3분 후 도착</Text>
-          </View>
-          <View style={styles.busInfoBox}>
-            <Text style={styles.highlight}>2호차</Text>
-            <Text style={styles.busInfo}> 8분 후 도착</Text>
-            <View style={styles.delayBox}>
-              <Text style={styles.delay}>3분 지연</Text>
-            </View>
-          </View>
-          <View style={styles.busInfoBox}>
-            <Text style={styles.highlight}>3호차</Text>
-            <Text style={styles.busInfo}> 13분 후 도착</Text>
+          {/* 추가된 부분: 동대구역 텍스트 */}
+          {stationName === '만촌역' && (
+            <Text style={[styles.departureText, { marginBottom: 40 }]}>대구은행역</Text> // marginTop 추가
+          )}
+
+          <View style={styles.destinationContainer}>
+            <Text style={styles.destinationText}>경북대학교</Text>
+            <Image source={KNU_logoFlower} style={styles.logoFlower} />
           </View>
         </View>
-
-        <View style={styles.stationContainer}>
-          <Image
-            source={require('../assets/img/bus_routine.png')}
-            style={styles.busRoutineImage}
-          />
-          <View style={styles.busIconContainer}>
-            <Image
-              source={require('../assets/img/bus_move_icon.png')}
-              style={styles.busIcon}
-            />
-          </View>
-
-          <TouchableOpacity 
-            style={[
-              styles.stationTextContainer_Manchon,
-              selectedStation === '만촌역' ? styles.selected : null
-            ]}
-            onPress={() => handleStationPress('만촌역')}
-          >
-            <Text style={[
-              styles.station,
-              selectedStation === '만촌역' ? styles.selectedText : null
-            ]}>
-              만촌역
-            </Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity 
-            style={[
-              styles.stationTextContainer_Bank,
-              selectedStation === '대구은행역' ? styles.selected : null
-            ]}
-            onPress={() => handleStationPress('대구은행역')}
-          >
-            <View style={styles.stationRow}>
-              <Text style={[
-                styles.station,
-                selectedStation === '대구은행역' ? styles.selectedText : null
-              ]}>
-                대구은행역
-              </Text>
-              <Text style={styles.stationTime}>10분 소요</Text>
-            </View>
-          </TouchableOpacity>
-
-          <TouchableOpacity 
-            style={[
-              styles.stationTextContainer_School,
-              selectedStation === '일청담' ? styles.selected : null
-            ]}
-            onPress={() => handleStationPress('일청담')}
-          >
-            <View style={styles.stationRow}>
-              <Text style={[
-                styles.station,
-                selectedStation === '일청담' ? styles.selectedText : null
-              ]}>
-                일청담
-              </Text>
-              <Text style={styles.stationTime}>15분 소요</Text>
-            </View>
-          </TouchableOpacity>
-        </View>
-      </ScrollView>
+      </View>
+      
+      <Image source={LineDivider_Red} style={{ width: 360, height: 2 }} />
+      <View style={styles.spacer} />
+      {/* Station name and icon section */}
+      <View style={styles.stationContainer}>
+        <Text style={styles.stationNameText}>{stationName}</Text>
+        <TouchableOpacity onPress={handleMapIconPress} style={styles.iconButton}>
+          <Image source={MapMaker_Icon} style={styles.icon} />
+        </TouchableOpacity>
+      </View>
+      <View style={styles.spacer} />
     </View>
-    </ImageBackground>
   );
 };
 
 const styles = StyleSheet.create({
-  background: {
-    flex: 1,
-  },
-  customHeader: {
-    backgroundColor: 'rgba(255, 255, 255, 0.8)', // 배경을 반투명으로 설정
-    padding: 15,
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  backButtonImage: {
-    marginTop: 20,
-    marginRight: 10, // 텍스트와의 간격
-  },
-  headerIcons: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginLeft: 30
-  },
-  headerIconMap: {
-    marginTop: 15,
-    marginBottom: -10
-  },
-  headerIconAlarm: {
-    width: 45,
-    height: 45,
-    marginTop: 20,
-    marginBottom: -10
-  },
-  headerTitle: {
-    color: '#DA2127',
-    fontWeight: 'bold',
-    fontSize: 28,
-    textAlign: 'center',
-    marginTop: 15,
-  },
-  redLine: {
-    height: 2,
-    backgroundColor: '#DA2127',
-    width: '93%',
-    marginBottom: 20,
-    justifyContent: 'center',
-    marginLeft: 15
-  },
   container: {
     flex: 1,
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    backgroundColor: '#FFFFFF',
+    zIndex: 1,
+    paddingTop: 50,
   },
-  busInfoContainer: {
-    marginBottom: 20,
-    paddingHorizontal: 30
+  busLineContainer: {
+    flexDirection: 'row',
+    width: 360,
+    height: 460,
   },
-  busInfoBox: {
-    borderColor: '#DA2127',
-    borderWidth: 2,
-    borderRadius: 10,
-    padding: 15,
-    marginBottom: 20,
-    flexDirection: 'row', // 수평 정렬
-    alignItems: 'center', // 수직 가운데 정렬
+  busLineImage: {
+    width: 50,
+    height: '93%', // Height should be 100% of the container
+    resizeMode: 'contain', // Keep aspect ratio
   },
-  busInfo: {
-    color: "black",
-    fontSize: 18,
-    fontWeight: '500',
-    marginRight: 70,
-  },
-  highlight: {
-    color: '#DA2127',
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginRight: 30,
-    marginLeft: 10,
-  },
-  delayBox: {
-    borderColor: 'red',
-    borderWidth: 2,
-    borderRadius: 7,
-    padding: 3,
-    paddingHorizontal: 15,
-    marginLeft: -20,
-  },
-  delay: {
-    color: "red",
-    fontSize: 15,
-    paddingBottom: 2,
+  stationTextContainer: {
+    flex: 1, // 가용 공간을 모두 사용
+    justifyContent: 'space-between', // 요소들 간격을 조절
+    alignItems: 'flex-start', // 왼쪽 정렬
+    width: 300,
+    paddingVertical: 10, // 상하 여백 추가
+    paddingLeft: 15,
+    height: '93%', // 전체 높이 사용
   },
   stationContainer: {
-    flex: 1, // 전체 공간을 차지하도록 설정
-    height: height * 0.5,
-    position: 'relative', // 자식 요소의 절대 위치를 허용
-    padding:20,
-    backgroundColor: 'rgba(255, 255, 255, 0)'
-  },
-  busRoutineImage: {
-    width: 30, 
-    position: 'absolute',
-    left: 30,
-    top: -10,
-  },
-  busIconContainer: {
-    position: 'absolute',
-    left: 30,
-    top: 100, 
-  },
-  stationTextContainer_Manchon: {
     flexDirection: 'row',
+    justifyContent: 'center',
     alignItems: 'center',
-    position: 'absolute',
-    left: 20, 
-    top: 45, // 높이 조정
-    padding: 10,
-    width: '100%',
-    borderRadius: 10,
-    borderWidth: 2,
-    borderColor: 'transparent',
-    paddingLeft: 80,
-    paddingBottom: 15
+    marginTop: 0,
   },
-  stationTextContainer_Bank: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    position: 'absolute',
-    left: 20, 
-    top: 180, // 높이 조정
-    padding: 10,
-    width: '100%', 
-    borderRadius: 10,
-    borderWidth: 2,
-    borderColor: 'transparent',
-    paddingLeft: 80,
-    paddingBottom: 15
-  },
-  stationTextContainer_School: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    position: 'absolute',
-    left: 20,
-    top: 325, // 높이 조정
-    padding: 10,
-    width: '100%',
-    borderRadius: 10,
-    borderWidth: 2,
-    borderColor: 'transparent', 
-    paddingLeft: 80,
-    paddingBottom: 15
-  },
-  stationRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between', // 텍스트 간격을 맞추기 위해
-    width: '100%',
-  },
-  stationTime: {
-    marginTop: 5,
-    fontSize: 16,
-  },
-  selected: {
-    borderColor: 'red',
-  },
-  selectedText: {
-    color: 'red',
-    fontSize: 20,
+  stationNameText: {
+    fontSize: 32,
+    color: '#DA2127',
     fontWeight: 'bold',
+    textAlign: 'center',
   },
-  station: {
+  stationLineText: {
+    fontSize: 40,
+    color: '#DA2127',
+    fontWeight: '600',
+    marginLeft: -50,
+    marginBottom: 0,
+  },
+  iconButton: {
+    marginLeft: 5,
+  },
+  icon: {
+    width: 30,
+    height: 30,
+    marginTop: 10
+  },
+  background: {
+    position: 'absolute',
+    top: 270,
+    left: 20,
+    width: 580,
+    height: 580,
+    resizeMode: 'cover',
+    zIndex: -1,
+  },
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(255, 255, 255, 0.6)',
+  },
+  spacer: {
+    height: 10,
+  },
+  spacer2: {
+    height: 20,
+  },
+  spacer3: {
+    height: 70,
+  },
+  infoContainer: {
+    marginTop: 20,
+    alignItems: 'center',
+  },
+  infoBox: {
+    borderWidth: 2,
+    borderColor: '#DA2127',
+    borderRadius: 10,
+    padding: 10,
+    marginVertical: 6,
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: 340,
+    height: 70,
+  },
+  leftAlign: {
+    flex: 0.9,
+    alignItems: 'flex-start',
+  },
+  centerAlign: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  rightAlign: {
+    flex: 1,
+    alignItems: 'flex-end',
+  },
+  busNum: {
+    color: '#DA2127',
+    fontWeight: 'bold',
+    fontSize: 26,
+    paddingLeft: 10,
+  },
+  arrival: {
+    color: '#000',
+    fontSize: 20,
+  },
+  delay: {
+    color: '#FF0000',
     fontSize: 18,
+    paddingRight: 5,
+  },
+  textBorder: {
+    borderWidth: 2,
+    borderColor: '#DA2127',
+    borderRadius: 10,
+    width: 380,
+    height: 90, // 높이를 늘립니다
+    marginLeft: -75,
+    marginBottom: 30,
+    justifyContent: 'center', // 수직 가운데 정렬
+    alignItems: 'center',// 수평 가운데 정렬
+    display: 'flex',
+  },
+  departureText: {
+    fontSize: 32,
+    color: '#DA2127',
+    fontWeight: '500',
+    marginBottom: 30, // "출발지" 아래 여백 추가
+    textAlign: 'left', // 왼쪽 정렬
+  },
+  destinationText: {
+    fontFamily: "KNU_TRUTH",
+    fontSize: 32,
+    color: '#DA2127',
+    fontWeight: '600',
+    marginTop: 5, // "경북대학교" 위 여백 추가
+    textAlign: 'left', // 왼쪽 정렬
+    marginLeft: -5,
+  },  
+  destinationContainer: {
+    flexDirection: 'row', // 수평 정렬
+    alignItems: 'center', // 수직 가운데 정렬
+    marginTop: 0, // 텍스트 위 여백
+  },
+  logoFlower: {
+    width: 40, // 이미지 너비 조정
+    height: 40, // 이미지 높이 조정
+    marginLeft: 5, // 텍스트와의 간격
+    marginTop: 6,
+    alignSelf: 'center', // 중앙 정렬
   },
 });
 
