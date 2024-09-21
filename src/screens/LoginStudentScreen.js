@@ -36,7 +36,7 @@ const LoginStudentScreen = ({ navigation }) => {
             secureTextEntry 
         />
         </View>
-      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('StudentLogin')}>
+      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('SelectStation')}>
         <Text style={styles.buttonText}>로그인</Text>
       </TouchableOpacity>
     </View>
