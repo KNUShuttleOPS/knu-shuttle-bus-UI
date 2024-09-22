@@ -1,17 +1,72 @@
-import React, { useEffect } from 'react';
-import { StyleSheet, Text, View, ImageBackground, Image, TouchableOpacity, TextInput } from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, Text, View, ImageBackground, Image, TouchableOpacity, TextInput, Alert } from 'react-native';
 import { useFonts } from "expo-font";
 import KNU_logoEng from '../assets/img/KNU_logoEng_Red.png';
 import KNU_emblem_Red from '../assets/img/KNU_emblem_Red.png';
+import { loadUUID } from '../utils/UUIDManager';
+import { API_DOMAIN } from '../constants/serverConstants';
 
 const LoginDriver = ({ navigation }) => {
   const [fontsLoaded] = useFonts({
     KNU_TRUTH: require("../assets/font/KNU TRUTH.ttf"),
   });
+  
+  const [userName, setUserName] = useState('');
+  const [password, setPassword] = useState('');
+
   if (!fontsLoaded) return null;
-  useEffect(() => {
-    
-  }, []);
+
+  const handleLogin = async () => {
+    try {
+      // 첫 번째 POST 요청
+      const deviceId = await loadUUID();
+      console.log(deviceId);
+      const userResponse = await fetch(API_DOMAIN + '/users', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          'deviceId': deviceId,
+          'userName': userName,
+          'password': password
+        }),
+      });
+      
+      const userData = await userResponse.text();
+      if (!userResponse.ok) {
+        console.log(userData);
+        throw new Error(userData.message || '사용자 로그인 실패');
+      }
+
+      // 두 번째 POST 요청
+      const busResponse = await fetch(API_DOMAIN + '/buses', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          'deviceId': deviceId,
+          'line': 0,
+          'round': 0
+        }),
+      });
+
+      const busData = await busResponse.text();
+      if (!busResponse.ok) {
+        throw new Error(busData.message || '버스 정보 전송 실패');
+      }
+
+      // 로그인 성공 및 정보 전송 성공
+      Alert.alert('로그인 성공', '로그인에 성공했습니다!');
+      navigation.navigate('SelectBus');
+
+    } catch (error) {
+      // 에러 처리
+      Alert.alert('오류', error.message);
+    }
+  };
+
   return (
     <View style={styles.container}>
       <ImageBackground source={KNU_emblem_Red} style={styles.background}>
@@ -29,18 +84,23 @@ const LoginDriver = ({ navigation }) => {
             style={styles.input} 
             placeholder="ID를 입력하세요" 
             placeholderTextColor="#999" 
+            value={userName}
+            onChangeText={setUserName}
         />
-        </View>
+      </View>
 
-        <View style={styles.inputContainer}>
+      <View style={styles.inputContainer}>
         <TextInput 
             style={styles.input} 
             placeholder="비밀번호를 입력하세요" 
             placeholderTextColor="#999" 
             secureTextEntry 
+            value={password}
+            onChangeText={setPassword}
         />
-        </View>
-      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('SelectBus')}>
+      </View>
+      
+      <TouchableOpacity style={styles.button} onPress={handleLogin}>
         <Text style={styles.buttonText}>로그인</Text>
       </TouchableOpacity>
     </View>
@@ -53,7 +113,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: '#FFFFFF',
-    zIndex: 1, // UI를 배경 이미지 위에 위치시킴
+    zIndex: 1,
   },
   logoContainer: {
     marginBottom: 50
@@ -64,50 +124,50 @@ const styles = StyleSheet.create({
     color: '#000',
   },
   background: {
-    position: 'absolute',  // 배경 이미지를 절대 위치로 설정
-    top: 230,  // Y 좌표 위치 (배경 이미지를 이동시킬 위치)
-    left: -210,  // X 좌표 위치
-    width: 580,  // 배경 이미지 너비
-    height: 580,  // 배경 이미지 높이
-    resizeMode: 'cover',  // 이미지 크기 조정 방식
-    zIndex: -1,  // 배경 이미지를 UI 뒤로 보냄
+    position: 'absolute',
+    top: 230,
+    left: -210,
+    width: 580,
+    height: 580,
+    resizeMode: 'cover',
+    zIndex: -1,
   },
   overlay: {
-    ...StyleSheet.absoluteFillObject,  // 부모 요소(배경 이미지)를 채우도록 설정
-    backgroundColor: 'rgba(255, 255, 255, 0.85)',  // 투명도 설정 (50%)
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(255, 255, 255, 0.85)',
   },
   button: {
-    backgroundColor: 'rgba(255, 255, 255, 0.85)', // 버튼 배경색
-    paddingVertical: 10, // 버튼 세로 패딩
-    paddingHorizontal: 50, // 버튼 가로 패딩
+    backgroundColor: 'rgba(255, 255, 255, 0.85)',
+    paddingVertical: 10,
+    paddingHorizontal: 50,
     paddingBottom: 15,
-    borderRadius: 10, // 버튼의 둥근 모서리
-    borderWidth: 2, // 테두리 두께
-    borderColor: '#DA2127', // 테두리 색상
-    marginTop: 40, // 텍스트 아래 간격
+    borderRadius: 10,
+    borderWidth: 2,
+    borderColor: '#DA2127',
+    marginTop: 40,
   },
   buttonText: {
-    color: '#DA2127', // 텍스트 색상
-    fontSize: 25, // 텍스트 크기
-    fontWeight: 'bold', // 텍스트 굵기
+    color: '#DA2127',
+    fontSize: 25,
+    fontWeight: 'bold',
   },
   spacer: {
-    height: 80, // 원하는 높이로 설정
+    height: 80,
   },
   input: {
-    height: 40, // 텍스트 박스 높이
-    width: '100%', // 너비를 100%로 설정
-    paddingHorizontal: 10, // 여백
-    textAlign: 'center', // 텍스트 가운데 정렬
+    height: 40,
+    width: '100%',
+    paddingHorizontal: 10,
+    textAlign: 'center',
   },
   inputContainer: {
-    width: '70%', // 너비
-    backgroundColor: 'rgba(255, 255, 255, 0.85)', // 배경색
-    borderColor: '#DA2127', // 테두리 색상
-    borderWidth: 2, // 테두리 두께
-    borderRadius: 10, // 둥근 모서리
-    overflow: 'hidden', // 자식 요소가 경계 바깥으로 나가지 않도록 설정
-    marginTop: 15, // 위쪽 간격
+    width: '70%',
+    backgroundColor: 'rgba(255, 255, 255, 0.85)',
+    borderColor: '#DA2127',
+    borderWidth: 2,
+    borderRadius: 10,
+    overflow: 'hidden',
+    marginTop: 15,
   },  
 });
 

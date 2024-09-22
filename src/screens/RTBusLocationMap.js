@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
+import { Client, Message } from 'paho-mqtt';
+import { MQTT_BROKER_DOMAIN, MQTT_BROKER_PORT } from '../constants/MQTT_Broker_Server_Constants';
 import { View, Text, StyleSheet, TouchableOpacity, Image, Alert } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useFocusEffect } from '@react-navigation/native'; 
+import { useFocusEffect, useEffect } from '@react-navigation/native'; 
 import BusMarker from '../assets/img/bus_marker.png';
 import BusStopMarker from '../assets/img/busStop_marker.png';
 import StarChecked_Icon from '../assets/img/StarChecked_Icon.png';
@@ -19,6 +21,9 @@ const stationCoordinates = {
 
 const RTBusLocationMap = ({ route }) => {
     const { stationName } = route.params;
+    const [lat, setLat] = useState(35.866258); // 초기 값 예시
+    const [lng, setLng] = useState(128.594013); // 초기 값 예시
+    const [favoriteStation, setFavoriteStation] = useState(null);
 
     const region = {
         latitude: stationCoordinates[stationName].latitude,
@@ -27,18 +32,71 @@ const RTBusLocationMap = ({ route }) => {
         longitudeDelta: 0.01,
     };
 
-    const [favoriteStation, setFavoriteStation] = useState(null);
+    // MQTT 클라이언트 생성 및 메시지 수신 핸들링
+    useEffect(() => {
+        console.log(route.params);
+        const setupMqttClient = async () => {
+            const clientId = await loadUUID(); // UUID 로드
+            const client = new Client(MQTT_BROKER_DOMAIN, MQTT_BROKER_PORT, clientId); // MQTT 클라이언트 생성
     
-    useFocusEffect(
-      React.useCallback(() => {
-        const loadFavoriteStation = async () => {
-          const storedStation = await AsyncStorage.getItem('favoriteStation');
-          if (storedStation) {
-            setFavoriteStation(storedStation);
-          }
+            // MQTT 클라이언트 연결 및 메시지 수신 핸들링
+            client.onConnectionLost = (responseObject) => {
+                if (responseObject.errorCode !== 0) {
+                    console.log('MQTT Connection Lost:', responseObject.errorMessage);
+                }
+            };
+    
+            client.onMessageArrived = (message) => {
+                console.log('MQTT Message Arrived:', message.payloadString);
+                try {
+                    const busData = JSON.parse(message.payloadString);
+                    if (busData.lat && busData.lng) {
+                        setLat(busData.lat); // 버스의 실시간 위치 업데이트
+                        setLng(busData.lng);
+                    }
+                } catch (err) {
+                    console.error('Error parsing MQTT message:', err);
+                }
+            };
+    
+            // MQTT 브로커에 연결
+            client.connect({
+                onSuccess: () => {
+                    console.log('Connected to MQTT broker');
+                    client.subscribe('bus/location'); // 버스 위치 토픽 구독
+                },
+                onFailure: (error) => {
+                    console.error('MQTT Connection failed:', error);
+                }
+            });
+    
+            return client;
         };
-        loadFavoriteStation();
-      }, [])
+    
+        // 비동기 함수 실행
+        const initClient = setupMqttClient();
+    
+        // 컴포넌트 언마운트 시 MQTT 클라이언트 연결 해제
+        return () => {
+            initClient.then(client => {
+                if (client && client.isConnected()) {
+                    client.disconnect();
+                }
+            });
+        };
+    }, []);
+    
+
+    useFocusEffect(
+        React.useCallback(() => {
+            const loadFavoriteStation = async () => {
+                const storedStation = await AsyncStorage.getItem('favoriteStation');
+                if (storedStation) {
+                    setFavoriteStation(storedStation);
+                }
+            };
+            loadFavoriteStation();
+        }, [])
     );
 
     const handleFavorite = async (stationName) => {
@@ -73,9 +131,9 @@ const RTBusLocationMap = ({ route }) => {
                         />
                     ))}
                     
-                    {/* 버스 위치에 대한 Marker 추가 (예시 좌표) */}
+                    {/* 버스 위치에 대한 Marker (실시간 업데이트) */}
                     <Marker
-                        coordinate={{ latitude: 35.866258, longitude: 128.594013 }} // 버스 위치 예시 좌표
+                        coordinate={{ latitude: lat, longitude: lng }} // 실시간으로 업데이트되는 좌표
                         title="버스 위치"
                         description="버스가 이 위치에 있습니다."
                         icon={BusMarker} // 버스 아이콘
