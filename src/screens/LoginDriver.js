@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { StyleSheet, Text, View, ImageBackground, Image, TouchableOpacity, TextInput } from 'react-native';
 import { useFonts } from "expo-font";
 import KNU_logoEng from '../assets/img/KNU_logoEng_Red.png';
@@ -9,7 +9,9 @@ const LoginDriver = ({ navigation }) => {
     KNU_TRUTH: require("../assets/font/KNU TRUTH.ttf"),
   });
   if (!fontsLoaded) return null;
-
+  useEffect(() => {
+    
+  }, []);
   return (
     <View style={styles.container}>
       <ImageBackground source={KNU_emblem_Red} style={styles.background}>

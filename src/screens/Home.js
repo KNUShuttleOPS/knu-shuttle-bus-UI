@@ -9,7 +9,7 @@ const Home = ({ navigation }) => {
     KNU_TRUTH: require("../assets/font/KNU TRUTH.ttf"),
   });
   if (!fontsLoaded) return null;
-
+  
   return (
     <View style={styles.container}>
       <ImageBackground source={KNU_emblem_Red} style={styles.background}>

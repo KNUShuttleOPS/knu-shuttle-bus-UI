@@ -1,5 +1,4 @@
-import 'dotenv/config';
-
+import {GOOGLE_MAPS_API_KEY_ANDROID,GOOGLE_MAPS_API_KEY_IOS } from './google-map-credentials';
 export default {
   expo: {
     name: "knu_bus",
@@ -20,12 +19,15 @@ export default {
         supportsTablet: true,
         bundleIdentifier: "com.m3e4.knu-shuttle-bus",
         config: {
-            googleMapsApiKey: process.env.GOOGLE_MAPS_API_KEY, 
+            googleMapsApiKey: GOOGLE_MAPS_API_KEY_IOS, 
         },
         infoPlist : {
             NSLocationWhenInUseUsageDescription: "앱 사용 중에 위치 서비스를 허용해주세요.",
             NSLocationAlwaysUsageDescription: "앱이 백그라운드에서 위치를 추적하려면 위치 접근 권한이 필요합니다.",
-            UIBackgroundModes: ["location"]
+            UIBackgroundModes: ["location"],
+            NSAppTransportSecurity : {
+              NSAllowsArbitraryLoads:true
+            }
         }
     },
     android: {
@@ -36,7 +38,7 @@ export default {
         },
         config: {
             googleMaps: {
-            apiKey: process.env.GOOGLE_MAPS_API_KEY, 
+            apiKey: process.env.GOOGLE_MAPS_API_KEY_ANDROID, 
             },
         },
         permissions: [

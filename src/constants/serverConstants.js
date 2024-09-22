@@ -1,1 +1,1 @@
-export const API_DOMAIN = '192.168.1.102';
+export const API_DOMAIN = 'http://192.168.1.102:8080';

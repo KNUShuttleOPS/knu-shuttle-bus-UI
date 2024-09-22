@@ -1,9 +1,7 @@
 import { Client, Message } from 'paho-mqtt';
 import { MQTT_BROKER_DOMAIN, MQTT_BROKER_PORT } from '../constants/MQTT_Broker_Server_Constants';
-import * as Location from 'expo-location';
 import { loadUUID } from '../utils/UUIDManager';
 import { fetchDirections } from './Direction5_DurationCheck';
-import 'dotenv/config';
 
 export const createMqttClient = async () => {
     try {
@@ -24,18 +22,16 @@ export const createMqttClient = async () => {
     }
 };
 
-export const sendLocationInfo = async (mqttClient) => {
+export const sendLocationInfo = async (mqttClient, currentLocation) => {
     if(mqttClient.isConnected()){
-        let currentLocation = await Location.getCurrentPositionAsync({});
-        
         const payload = {
             time : new Date().toISOString(),
             lat : currentLocation.coords.latitude,
-            lng : currentLocation.coords.latitude,
-            duration : await fetchDirections()
+            lng : currentLocation.coords.longitude,
+            duration : await fetchDirections('128.62772, 35.87689', '128.63035, 35.86663')
         }
         const mqttMessage = new Message(JSON.stringify(payload));
-        const clientId = await loadUUID('128.62772, 35.87689', '128.63035, 35.86663');
+        const clientId = await loadUUID();
         mqttMessage.destinationName = clientId +'/location';
         mqttClient.send(mqttMessage);
 

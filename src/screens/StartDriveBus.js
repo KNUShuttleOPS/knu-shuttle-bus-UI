@@ -2,10 +2,12 @@ import React, { useState } from 'react';
 import { StyleSheet, Text, View, ImageBackground, Image, TouchableOpacity, Alert } from 'react-native';
 import { useFonts } from "expo-font";
 import {createMqttClient} from '../services/Paho_MQTTClient';
+import { initializeTask } from '../utils/PermissionManager';
+import {startLocationTracking, stopLocationTracking} from '../services/RTLocationTracking';
 import KNU_logoEng from '../assets/img/KNU_logoEng_Red.png';
 //import KNU_emblem_Red from '../assets/img/KNU_emblem_Red.png';
 import KNU_emblem_Gray from '../assets/img/KNU_emblem_Gray.png';
-import Bus_Icon from '../assets/img/Bus_Icon.png';
+import Bus_Icon from '../assets/img/bus_icon.png';
 import LineDivider_Red from '../assets/img/LineDivider_Red.png';
 
 const StartDriveBus = ({ navigation, route }) => {
@@ -16,17 +18,7 @@ const StartDriveBus = ({ navigation, route }) => {
   const [mqttClient, setMqttClient] = useState(null);
   if (!fontsLoaded) return null;
   
-  useEffect(() => {
-    createMqttClient()
-      .then((client) => {
-        setMqttClient(client);
-      })
-      .catch((error) => {
-        console.error('Failed to initialize MQTT client:', error);
-      });
-  }, []);
-  
-  const startOrStopDriving = () => {
+  const startOrStopDriving = async() => {
     if (!isDriving) {
       createMqttClient()
       .then((client) => {
@@ -35,15 +27,18 @@ const StartDriveBus = ({ navigation, route }) => {
       .catch((error) => {
         console.error('Failed to initialize MQTT client:', error);
       });
+      initializeTask();
+      await startLocationTracking();
+      setIsDriving(true);
     } else {
-      Alert.alert('수고하셨습니다!', '', [
-        { text: '확인', onPress: () => {
-          mqttClient.disconnected();
-          navigation.navigate('Home');
-        } }
-      ]);
+      if(mqttClient){
+        mqttClient.disconnected();
+        setMqttClient(null);
+      }
+      await stopLocationTracking();
+      setIsDriving(false);
+      navigation.navigate('Home');
     }
-    setIsDriving(!isDriving);  // 상태를 반전시킴
   };
 
   const accidentOccurred = () => {
