@@ -65,6 +65,7 @@ Knupia나 학교 홈페이지에 들어가면 셔틀 버스 정류장 위치와 
   FE : React Native
   
   BE : Java, Spring
+  
   Container : Docker
   
 ## 향후 개선 혹은 발전 방안
