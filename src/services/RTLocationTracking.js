@@ -1,37 +1,32 @@
 import * as Location from 'expo-location';
+import {sendLocationInfo} from './Paho_MQTTClient';
 
-export const startLocationTracking = async () => {
+export const startLocationTracking = async (client) => {
     // 위치 권한 요청
+    if(!client){
+      console.log("null error");
+    }
     const { status } = await Location.requestForegroundPermissionsAsync();
     if (status !== 'granted') {
       console.error('위치 권한이 거부되었습니다.');
       return;
     }
 
-    // 백그라운드 위치 권한 요청 (iOS 전용)
-    if (Platform.OS === 'ios') {
-      const { granted } = await Location.requestBackgroundPermissionsAsync();
-      if (!granted) {
-        console.error('백그라운드 위치 권한이 거부되었습니다.');
-        return;
+    await Location.watchPositionAsync(
+      {
+        accuracy: Location.Accuracy.High,
+        timeInterval: 10000,
+        distanceInterval: 50,
+      },
+      async (location) => {
+        console.log('현재 위치:', location);
+        await sendLocationInfo(client, location)
+        .then(() => {
+          console.log('위치 정보 전송 성공');
+        })
+        .catch(err => {
+          console.error('위치 정보 전송 실패:', err);
+        });
       }
-    }
-
-    // 백그라운드 위치 추적 시작
-    await Location.startLocationUpdatesAsync('background-location-task', {
-      accuracy: Location.Accuracy.High,
-      timeInterval: 10000, // 10초마다 위치 업데이트
-      distanceInterval: 50, // 50미터 이동 시 위치 업데이트
-      showsBackgroundLocationIndicator: true, // iOS에서 백그라운드 위치 추적 표시
-    });
-  };
-
-
-  const stopLocationTracking = async () => {
-    try {
-      await Location.stopLocationUpdatesAsync(LOCATION_TASK_NAME);
-      setIsTracking(false);
-    } catch (error) {
-      console.error('위치 추적 중지 오류:', error);
-    }
+    );
   };

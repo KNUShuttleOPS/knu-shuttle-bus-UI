@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, ImageBackground, Image, TouchableOpacity, ScrollView } from 'react-native';
+import { loadUUID } from '../utils/UUIDManager';
+import { API_DOMAIN } from '../constants/serverConstants';
 import { useFonts } from "expo-font";
 import KNU_logoEng from '../assets/img/KNU_logoEng_Red.png';
 import KNU_emblem_Red from '../assets/img/KNU_emblem_Red.png';
@@ -33,6 +35,37 @@ const SelectDriveBus = ({ navigation }) => {
     setShowLine2(false);
   };
 
+  const handleBusSelect = async (line, busNumber) => {
+    const deviceId = await loadUUID();
+
+    // PATCH 요청 보내기
+    try {
+      const response = await fetch(`${API_DOMAIN}/buses/${deviceId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          'line': line,
+          'round': busNumber,
+          'operationInfo': true
+        })
+      });
+      if (!response.ok) {
+        throw new Error('버스 정보를 서버에 전송하는 데 실패했습니다.');
+      }
+
+      // 서버 응답 처리
+      const data = await response.text();
+      console.log(data); // 서버에서 받은 데이터 로그
+
+      // 다음 페이지로 이동
+      navigation.navigate('DriveBus', { line, busNumber });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
     <View style={styles.container}>
       <ImageBackground source={KNU_emblem_Red} style={styles.background}>
@@ -50,7 +83,7 @@ const SelectDriveBus = ({ navigation }) => {
       {showLine1 && (
         <ScrollView style={styles.scrollContainer} contentContainerStyle={styles.scrollContent}>
           {[...Array(13).keys()].map((index) => (
-            <TouchableOpacity key={index} style={styles.smallButton} onPress={() => navigation.navigate('DriveBus', { line: 1, busNumber: index + 1 })}>
+            <TouchableOpacity key={index} style={styles.smallButton} onPress={() => handleBusSelect(1, index + 1)}>
               <Text style={styles.smallButtonText}>{index + 1}회차</Text>
             </TouchableOpacity>
           ))}
@@ -66,7 +99,7 @@ const SelectDriveBus = ({ navigation }) => {
       {showLine2 && (
         <ScrollView style={styles.scrollContainer} contentContainerStyle={styles.scrollContent}>
           {[...Array(6).keys()].map((index) => (
-            <TouchableOpacity key={index} style={styles.smallButton} onPress={() => navigation.navigate('DriveBus', { line: 2, busNumber: index + 1 })}>
+            <TouchableOpacity key={index} style={styles.smallButton} onPress={() => handleBusSelect(2, index + 1)}>
               <Text style={styles.smallButtonText}>{index + 1}회차</Text>
             </TouchableOpacity>
           ))}
@@ -82,12 +115,13 @@ const SelectDriveBus = ({ navigation }) => {
       {showLine3 && (
         <ScrollView style={styles.scrollContainer} contentContainerStyle={styles.scrollContent}>
           {[...Array(2).keys()].map((index) => (
-            <TouchableOpacity key={index} style={styles.smallButton} onPress={() => navigation.navigate('DriveBus', { line: 3, busNumber: index + 1 })}>
+            <TouchableOpacity key={index} style={styles.smallButton} onPress={() => handleBusSelect(3, index + 1)}>
               <Text style={styles.smallButtonText}>{index + 1}회차</Text>
             </TouchableOpacity>
           ))}
         </ScrollView>
       )}
+      
       <View style={styles.spacer2} />
       <Image source={LineDivider_Red} style={{ width: 360, height: 2 }} />
       <View style={styles.spacer2} />
@@ -155,8 +189,6 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     alignItems: 'center',  // 작은 버튼들을 가운데 정렬
-    // borderLeftWidth: 2,  // 안쪽 왼쪽에 선 추가
-    // borderLeftColor: '#DA2127',  // 안쪽 왼쪽 선의 색상
     paddingLeft: 8,  // 텍스트와 선 사이 간격 추가 (필요 시)
   },
   smallButton: {

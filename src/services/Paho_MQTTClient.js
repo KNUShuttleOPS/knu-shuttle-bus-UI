@@ -23,7 +23,7 @@ export const createMqttClient = async () => {
 };
 
 export const sendLocationInfo = async (mqttClient, currentLocation) => {
-    if(mqttClient.isConnected()){
+    if(mqttClient & mqttClient.isConnected()){
         const payload = {
             time : new Date().toISOString(),
             lat : currentLocation.coords.latitude,

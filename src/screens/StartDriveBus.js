@@ -1,15 +1,18 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, ImageBackground, Image, TouchableOpacity, Alert } from 'react-native';
 import { useFonts } from "expo-font";
-import {createMqttClient} from '../services/Paho_MQTTClient';
-import { initializeTask } from '../utils/PermissionManager';
-import {startLocationTracking, stopLocationTracking} from '../services/RTLocationTracking';
+import { MQTT_BROKER_DOMAIN, MQTT_BROKER_PORT } from '../constants/MQTT_Broker_Server_Constants';
+import { loadUUID } from '../utils/UUIDManager';
+import { fetchDirections } from '../services/Direction5_DurationCheck';
+import { Client, Message } from 'paho-mqtt';
+import * as Location from 'expo-location';
 import KNU_logoEng from '../assets/img/KNU_logoEng_Red.png';
 //import KNU_emblem_Red from '../assets/img/KNU_emblem_Red.png';
 import KNU_emblem_Gray from '../assets/img/KNU_emblem_Gray.png';
 import Bus_Icon from '../assets/img/bus_icon.png';
 import LineDivider_Red from '../assets/img/LineDivider_Red.png';
 
+ 
 const StartDriveBus = ({ navigation, route }) => {
   const [fontsLoaded] = useFonts({
     KNU_TRUTH: require("../assets/font/KNU TRUTH.ttf"),
@@ -18,35 +21,101 @@ const StartDriveBus = ({ navigation, route }) => {
   const [mqttClient, setMqttClient] = useState(null);
   if (!fontsLoaded) return null;
   
-  const startOrStopDriving = async() => {
+  const startOrStopDriving = async () => {
     if (!isDriving) {
-      createMqttClient()
-      .then((client) => {
+      try {
+        // MQTT 클라이언트 생성
+        const clientId = await loadUUID();
+        const client = new Client(MQTT_BROKER_DOMAIN, MQTT_BROKER_PORT, clientId);
+  
+        client.connect({
+          onSuccess() {
+            console.log('Connected to MQTT broker with client ID:', clientId);
+            client.subscribe(route.params.line + 'line_' + route.params.busNumber + '/location');
+  
+            // 위치 추적 시작 (MQTT 연결이 완료된 후)
+            startLocationTracking(client);
+          },
+          onFailure(err) {
+            console.log('Failed to connect:', err);
+          },
+        });
+  
+        // MQTT 클라이언트를 상태로 저장
         setMqttClient(client);
-      })
-      .catch((error) => {
-        console.error('Failed to initialize MQTT client:', error);
-      });
-      initializeTask();
-      await startLocationTracking();
-      setIsDriving(true);
-    } else {
-      if(mqttClient){
-        mqttClient.disconnected();
-        setMqttClient(null);
+  
+        // 운전 상태를 true로 설정 (클라이언트 연결 완료 후)
+        setIsDriving(true);
+  
+      } catch (error) {
+        console.error('Failed to initialize MQTT client or start tracking:', error);
       }
-      await stopLocationTracking();
-      setIsDriving(false);
-      navigation.navigate('Home');
+    } else {
+      try {
+        if (mqttClient) {
+          mqttClient.disconnect(); // MQTT 연결 해제
+          setMqttClient(null); // 클라이언트 초기화
+        }
+  
+        // 운전 상태를 false로 설정
+        setIsDriving(false);
+        navigation.navigate('Home'); // 홈 화면으로 이동
+  
+      } catch (error) {
+        console.error('Error stopping driving or disconnecting MQTT:', error);
+      }
     }
   };
+  
+  // 위치 추적을 별도의 함수로 분리하여 MQTT 연결 후 호출
+  const startLocationTracking = async (client) => {
+    // 위치 권한 요청
+    const { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== 'granted') {
+      console.error('위치 권한이 거부되었습니다.');
+      return;
+    }
+  
+    // 위치 추적 시작
+    await Location.watchPositionAsync(
+      {
+        accuracy: Location.Accuracy.High,
+        timeInterval: 10000,
+        distanceInterval: 50,
+      },
+      async (location) => {
+        console.log('현재 위치:', location);
+  
+        // 연결 확인 후 메시지 전송
+        if (client && client.isConnected()) {
+          const payload = {
+            time: new Date().toISOString(),
+            lat: location.coords.latitude,
+            lng: location.coords.longitude,
+            duration: await fetchDirections('128.62772, 35.87689', '128.63035, 35.86663'),
+          };
+          const mqttMessage = new Message(JSON.stringify(payload));
+          const clientId = await loadUUID();
+          mqttMessage.destinationName = clientId + '/location';
+          client.send(mqttMessage);
+  
+          console.log('Location Message Sent');
+        } else {
+          console.log('Client is not connected');
+        }
+      }
+    );
+  };
+  
+  // route.params에서 전달된 호선과 호차 정보 추출
+ const { line, busNumber } = route.params || { line: '정보 없음', busNumber: '정보 없음' };
+
 
   const accidentOccurred = () => {
     alert('사고 발생!');
   };
 
-  // route.params에서 전달된 호선과 호차 정보 추출
-  const { line, busNumber } = route.params || { line: '정보 없음', busNumber: '정보 없음' };
+ 
 
   return (
     <View style={styles.container}>

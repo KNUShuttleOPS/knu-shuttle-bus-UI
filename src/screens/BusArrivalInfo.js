@@ -2,6 +2,8 @@ import React, { useEffect } from 'react';
 import { StyleSheet, Text, View, ImageBackground, Image, TouchableOpacity, Alert } from 'react-native';
 import { useFonts } from "expo-font";
 import * as Notifications from 'expo-notifications';
+import { API_DOMAIN } from '../constants/serverConstants';
+
 import KNU_emblem_Gray from '../assets/img/KNU_emblem_Gray.png';
 import LineDivider_Red from '../assets/img/LineDivider_Red.png';
 import MapMaker_Icon from '../assets/img/MapMaker_Icon.png';
@@ -18,7 +20,7 @@ Notifications.setNotificationHandler({
   }),
 });
 
-const  BusArrivalInfo = ({ route, navigation }) => {
+const BusArrivalInfo = ({ route, navigation }) => {
   const { stationName } = route.params;
 
   const [fontsLoaded] = useFonts({
@@ -27,30 +29,64 @@ const  BusArrivalInfo = ({ route, navigation }) => {
   if (!fontsLoaded) return null;
 
   useEffect(() => {
-    const requestPermissions = async () => {
-      const { status } = await Notifications.getPermissionsAsync();
-      if (status !== 'granted') {
-        const { status: newStatus } = await Notifications.requestPermissionsAsync();
-        if (newStatus !== 'granted') {
-          Alert.alert('알림 권한이 필요합니다.');
+    const fetchBusArrivalInfo = async () => {
+      let line, station;
+
+      // stationName에 따라 line과 station 값 설정
+      switch (stationName) {
+        case '동대구역':
+          line = 1;
+          station = 1;
+          break;
+        case '신천역':
+          line = 1;
+          station = 2;
+          break;
+        case '만촌역':
+          line = 2;
+          station = 1;
+          break;
+        case '대구은행역':
+          line = 2;
+          station = 2;
+          break;
+        case '북구청역':
+          line = 3;
+          station = 1;
+          break;
+        default:
+          Alert.alert('알림', '알 수 없는 정류장입니다.');
+          return;
+      }
+
+      // GET 요청 보내기
+      try {
+        const response = await fetch(`${API_DOMAIN}/arrival?line=${line}&station=${station}`, {method : 'GET'});
+        console.log(response)
+        if (!response.ok) {
+          throw new Error('버스 도착 정보를 가져오는 데 실패했습니다.');
         }
+        const data = await response.text();
+        console.log(data); // 서버에서 받은 데이터를 로그로 확인
+      } catch (error) {
+        Alert.alert('오류', error.message);
       }
     };
 
-    requestPermissions();
-  }, []);
+    fetchBusArrivalInfo();
+  }, [stationName]);
 
   const handleAlarmIconPress = async () => {
     await Notifications.scheduleNotificationAsync({
       content: {
         title: "버스 도착 알림",
-        body: `${BusNumFirst}호차가 ${ArrivalMinuteFirst}분 후 도착합니다.`,
+        body: "버스 도착 정보가 업데이트되었습니다.",
       },
       trigger: null, // 즉시 알림
     });
   };
 
-  // Initialize variables
+  // Initialize variables (여기서 실제 데이터로 교체 가능)
   const BusNumFirst = "1";
   const ArrivalMinuteFirst = "5";
   const delayMinuteFirst = "0";
@@ -62,7 +98,7 @@ const  BusArrivalInfo = ({ route, navigation }) => {
   const BusNumThird = "3";
   const ArrivalMinuteThird = "10";
   const delayMinuteThird = "2";
-
+  
   // Determine which bus line image to display
   const busLineImage = stationName === '북구청역' ? BusLine_1way : BusLine_2way;
 
@@ -138,11 +174,11 @@ const  BusArrivalInfo = ({ route, navigation }) => {
           <Text style={styles.departureText}>출발지</Text>
           {/* 추가된 부분: 동대구역 텍스트 */}
           {stationName === '신천역' && (
-            <Text style={[styles.departureText, { marginTop: 20 }]}>동대구역</Text> // marginTop 추가
+            <Text style={[styles.departureText, { marginTop: 20 }]}>동대구역</Text>
           )}
-          {/* 추가된 부분: 동대구역 텍스트 */}
+          {/* 추가된 부분: 대구은행역 텍스트 */}
           {stationName === '대구은행역' && (
-            <Text style={[styles.departureText, { marginTop: 20 }]}>만촌역</Text> // marginTop 추가
+            <Text style={[styles.departureText, { marginTop: 20 }]}>만촌역</Text>
           )}
           
           <View style={styles.textBorder}>
@@ -150,12 +186,11 @@ const  BusArrivalInfo = ({ route, navigation }) => {
           </View>
           {/* 추가된 부분: 신천역 텍스트 */}
           {stationName === '동대구역' && (
-            <Text style={[styles.departureText, { marginBottom: 40 } ]}>신천역</Text> // marginTop 추가
+            <Text style={[styles.departureText, { marginBottom: 40 } ]}>신천역</Text>
           )}
-
-          {/* 추가된 부분: 동대구역 텍스트 */}
+          {/* 추가된 부분: 만촌역 텍스트 */}
           {stationName === '만촌역' && (
-            <Text style={[styles.departureText, { marginBottom: 40 }]}>대구은행역</Text> // marginTop 추가
+            <Text style={[styles.departureText, { marginBottom: 40 }]}>대구은행역</Text>
           )}
 
           <View style={styles.destinationContainer}>
@@ -170,14 +205,14 @@ const  BusArrivalInfo = ({ route, navigation }) => {
       {/* Station name and icon section */}
       <View style={styles.stationContainer}>
         <View style={styles.stationNameContainer}>
-        <Text style={styles.stationNameText}>{stationName}</Text>
-        <TouchableOpacity onPress={() => navigation.navigate('RTBusLocationMap', { stationName })} style={styles.iconButton}>
-          <Image source={MapMaker_Icon} style={styles.icon} />
-        </TouchableOpacity>
+          <Text style={styles.stationNameText}>{stationName}</Text>
+          <TouchableOpacity onPress={() => navigation.navigate('RTBusLocationMap', { stationName })} style={styles.iconButton}>
+            <Image source={MapMaker_Icon} style={styles.icon} />
+          </TouchableOpacity>
         </View>
         <TouchableOpacity onPress={handleAlarmIconPress}>
           <Image source={BusAlarmIcon} style={styles.Alarmicon}/>
-      </TouchableOpacity>
+        </TouchableOpacity>
       </View>
       <View style={styles.spacer} />
     </View>

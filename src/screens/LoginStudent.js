@@ -19,7 +19,6 @@ const LoginStudent = ({ navigation }) => {
     try {
       // 첫 번째 POST 요청
       const deviceId = await loadUUID();
-      console.log(deviceId);
       const userResponse = await fetch(API_DOMAIN + '/users', {
         method: 'POST',
         headers: {
@@ -37,7 +36,7 @@ const LoginStudent = ({ navigation }) => {
         console.log(userData);
         throw new Error(userData.message || '사용자 로그인 실패');
       }
-      console.log("ok");
+
       // 두 번째 POST 요청
       const passengerResponse = await fetch(API_DOMAIN + '/passengers', {
         method: 'POST',
@@ -51,6 +50,7 @@ const LoginStudent = ({ navigation }) => {
       });
       
       const passengerData = await passengerResponse.text();
+      console.log(passengerData);
       if (!passengerResponse.ok) {
         throw new Error(passengerData.message || '승객 정보 전송 실패');
       }

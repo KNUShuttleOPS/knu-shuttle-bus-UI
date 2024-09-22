@@ -1,9 +1,8 @@
-import {DIRECTION5_CLIENT_ID, DIRECTION5_SECRET} from '../../naver-direction5-credentials';
+import {DIRECTION5_CLIENT_ID, DIRECTION5_CLIENT_SECRET} from '../../naver_direction5_credentials';
 
 export const fetchDirections = async (start, goal) => {
     const clientId = DIRECTION5_CLIENT_ID;
-    const clientSecret = DIRECTION5_SECRET;
-    
+    const clientSecret = DIRECTION5_CLIENT_SECRET;
     const url = `https://naveropenapi.apigw.ntruss.com/map-direction/v1/driving?start=${start}&goal=${goal}&option=traavoidtoll`;
   
     try {
